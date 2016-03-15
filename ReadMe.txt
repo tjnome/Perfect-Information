@@ -1,29 +1,33 @@
-﻿Perfect Information for XCOM2
+﻿# Perfect Information a mod for XCOM2
 
-== Description ==
+## Description
 
-This mod focus on giving back the second wave option Perfect Information.
+Displays Hit/Crit/Dodge % for XCOM and Aliens (Configurable) and much more. Works like Long War's Second Wave Option.
 
-== Configuration ==
+## Steam Workshop and Nexus
 
-Configuration can be changes through XComPerfectInformation.ini file. found in the Config folder in the mod package. When installing through the Steam Workshop, it can be found in the steamapps\workshop\content\268500\625737801\Config folder.
+Steam: http://steamcommunity.com/sharedfiles/filedetails/?id=625737801&tscn=1458050588
 
-OnlyShowPerfectInformationOnEnemy
-- This option make it so information only triggers on enemy fire (default: false)
+Nexus: http://www.nexusmods.com/xcom2/mods/252
 
-ShowHitChance = true;
-- If you want hit chance to be shown. (default: true)
+## Contributing
 
-ShowCritChance = true;
-- If you want crit chance to be shown. (default: true)
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
 
-ShowGuaranteedHit = true;
-- If you want abilities that have static value of 100% chance to hit be shown as GUARENTED HIT. (default: true)
+## Contributors
 
-ShowGuaranteedHitOnGrenade = false;
-- If you want grenades that have static value of 100% chance to hit be shown as GUARENTED HIT. (default: false)
+Leon for mod preview Image! Thanks mate! You can check him out on DeviantArt: http://leo-n.deviantart.com/ 
 
-== Installation ==
+## Credits
+
+- Sectoidfodder (http://steamcommunity.com/profiles/76561198022311629) 
+His mod help me to understand and solve a problem much easier than I thought it could be done. 
+
+## Installation
 
 For manual installation, unzip the installation package into your XCOM2\XComGame\Mods folder 
 (create the Mods folder if it doesn't exist).
