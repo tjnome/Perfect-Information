@@ -47,5 +47,5 @@ Temporary Items
 .apdisk
 
 # Ignore Modbuddy files
-.ID
-.x2proj
+*.x2proj
+PublishedFileId.ID
