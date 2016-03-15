@@ -1,0 +1,20 @@
+[XCom_Perfect_Information_X2Action_ApplyWeaponDamageToUnit]
+HIT_CHANCE_MSG ="HIT:";
+CRIT_CHANCE_MSG ="CRIT:";
+DODGE_CHANCE_MSG ="DODGE:";
+MISS_CHANCE_MSG ="MISS:";
+
+GUARANTEED_HIT_MSG =" - GUARANTEED_HIT";
+GUARANTEED_MISS_MSG =" - GUARANTEED_MISS";
+
+REPEATER_KILL_MSG =" - Repeater: ";
+
+[XCom_Perfect_Information_UITacticalHUD_ShotWings]
+LOWER_DIFFICULTY_MSG = "LOWER DIFFICULTY";
+MISS_STREAK_MSG = "MISS STREAK";
+SOLDIER_LOST_BONUS = "SOLDIER LOST BONUS";
+
+[XCom_Perfect_Information_UITacticalHUD_SoldierInfoTooltip]
+KILLS_LABEL = "Kills";
+ASSIST_LABEL = "Assist";
+FLANKING_CRIT_LABEL = "Flanking Crit";
