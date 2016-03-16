@@ -221,7 +221,7 @@ function string GetChance()
 {
 	local StateObjectReference Shooter, Target;
 	local XComGameState_Ability AbilityState;
-	local XComGameState_Unit ShooterState;
+	local XComGameState_Unit ShooterState, TargetState;
 	local ShotBreakdown kBreakdown;
 	local XComGameStateHistory History;
 	local string returnText;
@@ -231,6 +231,7 @@ function string GetChance()
 	History = `XCOMHISTORY;
 	Shooter = AbilityContext.InputContext.SourceObject;
 	Target = AbilityContext.InputContext.PrimaryTarget;
+	TargetState = XComGameState_Unit(History.GetGameStateForObjectID(Target.ObjectID));
 	ShooterState = XComGameState_Unit(History.GetGameStateForObjectID(Shooter.ObjectID));
 	
 	// fix couple of things!
@@ -269,8 +270,13 @@ function string GetChance()
 
 	// Outputs whatever the value is now (Hit with or without Assist). 
 	if (SHOW_HIT_CHANCE_FLYOVERS && !SHOW_MISS_CHANCE_FLYOVERS)
-		returnText = (returnText $ HIT_CHANCE_MSG $ calcHitChance $ "% ");
-	
+	{
+		if (TargetState.GetMyTemplateName() == 'MimicBeacon')
+			returnText = (returnText $ HIT_CHANCE_MSG $ "100" $ "% ");
+		else
+			returnText = (returnText $ HIT_CHANCE_MSG $ calcHitChance $ "% ");
+	}
+
 	// Outputs miss chance
 	if (SHOW_MISS_CHANCE_FLYOVERS)
 		returnText = (returnText $ MISS_CHANCE_MSG $ (100 - calcHitChance) $ "% ");
