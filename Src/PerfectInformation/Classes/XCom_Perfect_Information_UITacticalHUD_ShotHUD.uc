@@ -8,7 +8,7 @@ var config bool SHOW_MISS_CHANCE_MAIN_HUD;
 
 var UIBGBox GrimyBox1, GrimyBox2, GrimyBox3, GrimyBox4;
 var UIText GrimyTextDodge, GrimyTextDodgeHeader, GrimyTextCrit, GrimyTextCritHeader;
-var config int BAR_HEIGHT, BAR_OFFSET_X, BAR_OFFSET_Y, BAR_ALPHA;
+var config int BAR_HEIGHT, BAR_OFFSET_X, BAR_OFFSET_Y, BAR_ALPHA, BAR_WIDTH_MULT;
 var config int DODGE_OFFSET_X, DODGE_OFFSET_Y, CRIT_OFFSET_X, CRIT_OFFSET_Y;
 var config string HIT_HEX_COLOR, CRIT_HEX_COLOR, DODGE_HEX_COLOR, MISS_HEX_COLOR;
 var config bool PREVIEW_MINIMUM, AIM_LEFT_OF_CRIT, SHOW_DODGE, SHOW_CRIT_DMG, PREVIEW_HACKING;
@@ -212,7 +212,7 @@ simulated function Update()
 					GrimyTextDodgeHeader = Spawn(class'UIText', self);
 					GrimyTextDodgeHeader.InitText('GrimyText2',FontString);
 					GrimyTextDodgeHeader.AnchorBottomCenter();
-					GrimyTextDodgeheader.SetPosition(default.DODGE_OFFSET_X+10,default.DODGE_OFFSET_Y-22);
+					GrimyTextDodgeheader.SetPosition(default.DODGE_OFFSET_X,default.DODGE_OFFSET_Y-22);
 				}
 
 				// Generate a display for Crit Damage
@@ -224,23 +224,30 @@ simulated function Update()
 					FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Normal);
 					FontString = class'UIUtilities_Text'.static.AddFontInfo(FontString,false,true);
 					GrimyTextCrit = Spawn(class'UIText', self);
-					GrimyTextCrit.InitText('GrimyText1',FontString);
+					GrimyTextCrit.InitText('GrimyText3',FontString);
 					GrimyTextCrit.AnchorBottomCenter();
-					GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y);
+					if ( GrimyCritDmg > 9 ) //If the string is too long, shift it left by 15 pixels (~1 digit)
+					{
+						GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y);
+					}
+					else
+					{
+						GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X+15,default.CRIT_OFFSET_Y);
+					}
 
 					FontString = "C.DMG";
 					FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,19);
 					FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Header);
 					GrimyTextCritHeader = Spawn(class'UIText', self);
-					GrimyTextCritHeader.InitText('GrimyText2',FontString);
+					GrimyTextCritHeader.InitText('GrimyText4',FontString);
 					GrimyTextCritHeader.AnchorBottomCenter();
 					GrimyTextCritheader.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y-22);
 				}
 
-				GrimyHitWidth = 4 * ( clamp( GrimyHitChance, 0, 100 ) - GrimyCritChance - GrimyDodgeChance );
-				GrimyCritWidth = 4 * GrimyCritChance;
-				GrimyDodgeWidth = 4 * GrimyDodgeChance;
-				GrimyMissWidth = 4 * ( 100 - HitChance);
+				GrimyHitWidth = default.BAR_WIDTH_MULT * ( clamp( GrimyHitChance, 0, 100 ) - GrimyCritChance - GrimyDodgeChance );
+				GrimyCritWidth = default.BAR_WIDTH_MULT * GrimyCritChance;
+				GrimyDodgeWidth = default.BAR_WIDTH_MULT * GrimyDodgeChance;
+				GrimyMissWidth = default.BAR_WIDTH_MULT * ( 100 - HitChance);
 				
 				// Generate the shot breakdown bar
 				if ( default.BAR_HEIGHT > 0 )
@@ -255,11 +262,11 @@ simulated function Update()
 						GrimyBox1.SetAlpha(default.BAR_ALPHA);
 						if ( default.AIM_LEFT_OF_CRIT )
 						{
-							GrimyBox1.SetPosition(default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
+							GrimyBox1.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
 						}
 						else
 						{
-							GrimyBox1.SetPosition(default.BAR_OFFSET_X + GrimyCritWidth,default.BAR_OFFSET_Y);
+							GrimyBox1.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyCritWidth,default.BAR_OFFSET_Y);
 						}
 						GrimyBox1.SetSize(GrimyHitWidth,default.BAR_HEIGHT);
 					}
@@ -274,11 +281,11 @@ simulated function Update()
 						GrimyBox2.SetAlpha(default.BAR_ALPHA);
 						if ( default.AIM_LEFT_OF_CRIT )
 						{
-							GrimyBox2.SetPosition(default.BAR_OFFSET_X + GrimyHitWidth,default.BAR_OFFSET_Y);
+							GrimyBox2.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth,default.BAR_OFFSET_Y);
 						}
 						else
 						{
-							GrimyBox2.SetPosition(default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
+							GrimyBox2.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
 						}
 						GrimyBox2.SetSize(GrimyCritWidth,default.BAR_HEIGHT);
 					}
@@ -291,7 +298,7 @@ simulated function Update()
 						GrimyBox3.SetHighlighed(true);
 						GrimyBox3.AnchorBottomCenter();
 						GrimyBox3.SetAlpha(default.BAR_ALPHA);
-						GrimyBox3.SetPosition(default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth,default.BAR_OFFSET_Y);
+						GrimyBox3.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth,default.BAR_OFFSET_Y);
 						GrimyBox3.SetSize(GrimyDodgeWidth,default.BAR_HEIGHT);
 					}
 
@@ -303,7 +310,7 @@ simulated function Update()
 						GrimyBox4.SetHighlighed(true);
 						GrimyBox4.AnchorBottomCenter();
 						GrimyBox4.SetAlpha(default.BAR_ALPHA);
-						GrimyBox4.SetPosition(default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth + GrimyDodgeWidth,default.BAR_OFFSET_Y);
+						GrimyBox4.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth + GrimyDodgeWidth,default.BAR_OFFSET_Y);
 						GrimyBox4.SetSize(GrimyMissWidth,default.BAR_HEIGHT);
 					}
 				}
@@ -422,10 +429,13 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
 {
 	local string FontString;
 	local XComGameState_InteractiveObject HackObject;
+	local XComGameState_Unit HackUnit;
 	local X2HackRewardTemplateManager HackManager;
 	local array<name> HackRewards;
 	local int HackOffense, HackDefense;
 	local array<X2HackRewardTemplate> HackRewardTemplates;
+	local X2HackRewardTemplate HackRewardInterator;
+	local array<int> HackRollMods;
 
 	if ( default.PREVIEW_HACKING )
 	{
@@ -435,7 +445,6 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
 			HackRewards = HackObject.GetHackRewards(SelectedAbilityTemplate.DataName);
 			if ( HackRewards.Length > 0 )
 			{
-				
 				HackManager = class'X2HackRewardTemplateManager'.static.GetHackRewardTemplateManager();
 				HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[0]));
 				HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[1]));
@@ -444,12 +453,55 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
 				HackOffense = class'X2AbilityToHitCalc_Hacking'.static.GetHackAttackForUnit(XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(Shooter.ObjectID)), SelectedAbilityState);
 				HackDefense = class'X2AbilityToHitCalc_Hacking'.static.GetHackDefenseForTarget(HackObject);
 				
+				HackRollMods = HackObject.GetHackRewardRollMods();
+				if ( HackRollMods.length == 0 )
+				{
+					foreach HackRewardTemplates(HackRewardInterator)
+					{
+						HackRollMods.AddItem(`SYNC_RAND_STATIC(HackRewardInterator.HackSuccessVariance * 2) - HackRewardInterator.HackSuccessVariance);
+					}
+					HackObject.SetHackRewardRollMods(HackRollMods);
+				}
+					
 				FontString = ShotDescription;
 				FontString = FontString $ "\n" $ class'UIUtilities_Text'.static.GetColoredText(HackRewardTemplates[0].GetFriendlyName(),eUIState_Bad);
 				FontString = FontString $ " - " $ class'UIUtilities_Text'.static.GetColoredText(HackRewardTemplates[1].GetFriendlyName(),eUIState_Good);
-				FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( "~" $ string(Clamp((100.0 - (HackRewardTemplates[1].MinHackSuccess + HackObject.HackRollMods[1])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
+				FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( string(Clamp((100.0 - (HackRewardTemplates[1].MinHackSuccess + HackObject.HackRollMods[1])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
 				FontString = FontString $ ", " $ class'UIUtilities_Text'.static.GetColoredText(HackRewardTemplates[2].GetFriendlyName(),eUIState_Good);
-				FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( "~" $ string(Clamp((100.0 - (HackRewardTemplates[2].MinHackSuccess + HackObject.HackRollMods[2])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
+				FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( string(Clamp((100.0 - (HackRewardTemplates[2].MinHackSuccess + HackObject.HackRollMods[2])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
+				return FontString;
+			}
+		}
+		else if ( SelectedAbilityTemplate.DataName == 'HaywireProtocol' )
+		{
+			HackUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(kTarget.PrimaryTarget.ObjectID));
+			HackRewards = HackUnit.GetHackRewards(SelectedAbilityTemplate.DataName);
+			if ( HackRewards.Length > 0 )
+			{
+				HackManager = class'X2HackRewardTemplateManager'.static.GetHackRewardTemplateManager();
+				HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[0]));
+				HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[1]));
+				HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[2]));
+				
+				HackOffense = class'X2AbilityToHitCalc_Hacking'.static.GetHackAttackForUnit(XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(Shooter.ObjectID)), SelectedAbilityState);
+				HackDefense = class'X2AbilityToHitCalc_Hacking'.static.GetHackDefenseForTarget(HackUnit);
+				
+				HackRollMods = HackUnit.GetHackRewardRollMods();
+				if ( HackRollMods.length == 0 )
+				{
+					foreach HackRewardTemplates(HackRewardInterator)
+					{
+						HackRollMods.AddItem(`SYNC_RAND_STATIC(HackRewardInterator.HackSuccessVariance * 2) - HackRewardInterator.HackSuccessVariance);
+					}
+					HackUnit.SetHackRewardRollMods(HackRollMods);
+				}
+					
+				FontString = ShotDescription;
+				FontString = FontString $ "\n" $ class'UIUtilities_Text'.static.GetColoredText(HackRewardTemplates[0].GetFriendlyName(),eUIState_Bad);
+				FontString = FontString $ " - " $ class'UIUtilities_Text'.static.GetColoredText(HackRewardTemplates[1].GetFriendlyName(),eUIState_Good);
+				FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( string(Clamp((100.0 - (HackRewardTemplates[1].MinHackSuccess + HackUnit.HackRollMods[1])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
+				FontString = FontString $ ", " $ class'UIUtilities_Text'.static.GetColoredText(HackRewardTemplates[2].GetFriendlyName(),eUIState_Good);
+				FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( string(Clamp((100.0 - (HackRewardTemplates[2].MinHackSuccess + HackUnit.HackRollMods[2])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
 				return FontString;
 			}
 		}
