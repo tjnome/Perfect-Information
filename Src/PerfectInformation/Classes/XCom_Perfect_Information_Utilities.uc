@@ -9,10 +9,7 @@ class XCom_Perfect_Information_Utilities extends Object;
 
 // Little hack to ensure that everyone on the battlefield have battlefield breakdown.
 static function ensureEveryoneHaveUnitBreakDown() {
-	// Shortcut variables
 	local XComGameStateHistory History;
-
-	// To perform the gamestate modification
 	local XComGameState_Unit unit;
 
 	History = `XCOMHISTORY;
@@ -20,7 +17,6 @@ static function ensureEveryoneHaveUnitBreakDown() {
 	// Update all in array
 	foreach History.IterateByClassType(class'XComGameState_Unit', unit)
 	{
-		//unit = XComGameState_Unit( `XCOMHISTORY.GetGameStateForObjectId(units[i].ObjectID) );
 		ensureUnitBreakDown(unit);
 	}
 }
@@ -28,18 +24,14 @@ static function ensureEveryoneHaveUnitBreakDown() {
 // This function ensure that all unit's have breakdown.
 static function XCom_Perfect_Information_ChanceBreakDown_Unit ensureUnitBreakDown(XComGameState_Unit unit) 
 {
-	// Shortcut variables
 	local XComGameStateHistory History;
-
-	// To perform the gamestate modification
 	local XComGameState newGameState;
 	local XComGameStateContext_ChangeContainer changeContainer;
 	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
 	local XComGameState_Unit newUnit;
 	
-	// Get shortcut vars
 	History = `XCOMHISTORY;
-	
+
 	// Check if unit has UnitStats
 	unitBreakDown = XCom_Perfect_Information_ChanceBreakDown_Unit(unit.FindComponentObject(class'XCom_Perfect_Information_ChanceBreakDown_Unit'));
 	if (unitBreakDown == none) {

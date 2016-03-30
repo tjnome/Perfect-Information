@@ -12,6 +12,7 @@ var int HitChance;
 var int CritChance;
 var int DodgeChance;
 
+// Initializing.
 function XCom_Perfect_Information_ChanceBreakDown initComponent() {
 	HitChance = 0; CritChance = 0; DodgeChance = 0;
 	return self;
