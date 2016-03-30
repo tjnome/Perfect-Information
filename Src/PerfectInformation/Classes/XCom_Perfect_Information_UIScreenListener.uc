@@ -10,10 +10,18 @@ class XCom_Perfect_Information_UIScreenListener extends UIScreenListener;
 event OnInit(UIScreen Screen) 
 {
 	local X2EventManager EventManager;
+	local UITacticalHUD hud;
 	local Object selfObj;
 
 	selfObj = self;
 	EventManager = class'X2EventManager'.static.GetEventManager();
+	hud = UITacticalHUD(Screen);
+
+	if( hud == none ) 
+	{
+		`log("This is not the correct screen!: " $ Screen);
+		return;
+	}
 
 	// Add new UnitState 
 	class'XCom_Perfect_Information_Utilities'.static.ensureEveryoneHaveUnitBreakDown();

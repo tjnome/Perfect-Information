@@ -320,12 +320,10 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 	CurrentDifficulty = `DIFFICULTYSETTING;
 	History = `XCOMHISTORY;
 
-	`log("eX2AbilityToHitCalc_StandardAim: " $ ((X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) ? "true" : "false"));
-
 	//Aim Assist is not used on ReactionFire or if the BaseHitChance is less then MaxAimAssistScore
 	if (BaseHitChance > StandardAim.MaxAimAssistScore || StandardAim.bReactionFire && X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
 	{
-		`log("No aim assist");
+		`log("===== No aim assist ===== ");
 		return 0;
 	}
 
@@ -373,7 +371,7 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 				SoldiersLost * StandardAim.AimAssistDifficulties[CurrentDifficulty].SoldiersLostAlienHitChanceAdjustment; // -25
 		}
 	}
-	`log("Aim Assist: " $ ModifiedHitChance);
+	`log("===== Aim Assist: " $ ModifiedHitChance $ " =====");
 	ModifiedHitChance = Clamp(ModifiedHitChance, 0, StandardAim.MaxAimAssistScore);
 	return ModifiedHitChance - BaseHitChance;
 }

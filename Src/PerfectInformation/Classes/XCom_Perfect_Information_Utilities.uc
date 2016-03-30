@@ -35,7 +35,7 @@ static function XCom_Perfect_Information_ChanceBreakDown_Unit ensureUnitBreakDow
 	// Check if unit has UnitStats
 	unitBreakDown = XCom_Perfect_Information_ChanceBreakDown_Unit(unit.FindComponentObject(class'XCom_Perfect_Information_ChanceBreakDown_Unit'));
 	if (unitBreakDown == none) {
-		`log("===== Adding UnitStats for " $ unit.GetFullName() $ " =======");
+		//`log("===== Adding UnitStats for " $ unit.GetFullName() $ " =======");
 
 		// Setup new game state
 		changeContainer = class'XComGameStateContext_ChangeContainer'.static.CreateEmptyChangeContainer("Adding unitBreakDown to " $ unit.GetFullName());
