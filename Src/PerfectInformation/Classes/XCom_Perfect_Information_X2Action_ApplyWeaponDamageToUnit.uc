@@ -304,7 +304,7 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 	`log("eX2AbilityToHitCalc_StandardAim: " $ ((X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) ? "true" : "false"));
 
 	//Aim Assist is not used on ReactionFire or if the BaseHitChance is less then MaxAimAssistScore
-	if (BaseHitChance > StandardAim.MaxAimAssistScore || StandardAim.bReactionFire || X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
+	if (BaseHitChance > StandardAim.MaxAimAssistScore || StandardAim.bReactionFire && X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
 	{
 		`log("No aim assist");
 		return 0;

@@ -21,7 +21,7 @@ static function ensureEveryoneHaveUnitBreakDown() {
 	}
 }
 
-// This function ensure that all unit's have breakdown.
+// This function ensure that all unit's have breakdown. (Credit Kosmo)
 static function XCom_Perfect_Information_ChanceBreakDown_Unit ensureUnitBreakDown(XComGameState_Unit unit) 
 {
 	local XComGameStateHistory History;
