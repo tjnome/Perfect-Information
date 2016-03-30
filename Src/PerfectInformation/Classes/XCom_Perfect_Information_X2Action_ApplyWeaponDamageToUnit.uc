@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_X2Action_ApplyWeaponDamageToUnit
+//	Author: tjnome
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_X2Action_ApplyWeaponDamageToUnit extends X2Action_ApplyWeaponDamageToUnit config(PerfectInformation);
 
 var config bool SHOW_FLYOVERS_ON_XCOM_TURN;
@@ -219,50 +222,35 @@ function bool GetStaticChance(out string msg)
 // Return with chance string
 function string GetChance()
 {
+	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
+	local XCom_Perfect_Information_ChanceBreakDown breakdown;
 	local StateObjectReference Shooter, Target;
-	local XComGameState_Ability AbilityState;
 	local XComGameState_Unit ShooterState, TargetState;
-	local ShotBreakdown kBreakdown;
 	local XComGameStateHistory History;
 	local string returnText;
-	local int critChance, dodgeChance, calcHitChance, iShotBreakdown;
-	local ShotModifierInfo ShotInfo;
+	local int critChance, dodgeChance, calcHitChance;
 
 	History = `XCOMHISTORY;
 	Shooter = AbilityContext.InputContext.SourceObject;
 	Target = AbilityContext.InputContext.PrimaryTarget;
 	TargetState = XComGameState_Unit(History.GetGameStateForObjectID(Target.ObjectID));
 	ShooterState = XComGameState_Unit(History.GetGameStateForObjectID(Shooter.ObjectID));
-	
-	// fix couple of things!
-	AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(XComGameStateContext_Ability(StateChangeContext).InputContext.AbilityRef.ObjectID));
 
-	if (Unit.IsDead())
-	{
-		// Unit is dead. That means the dead target have moved from location. Data is useless.
-		`log("Unit is dead. Data is useless");
-	}
+	// Getting information from older state!
+	`log("===== Checking unitname " $ ShooterState.GetFullName() $ " =======");
+	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(ShooterState);
+	breakdown = unitBreakDown.getChanceBreakDown();
 
-	iShotBreakdown = AbilityState.LookupShotBreakdown(Shooter, Target, AbilityState.GetReference(), kBreakdown);
+	calcHitChance = breakdown.HitChance;
+	critChance = breakdown.CritChance;
+	dodgeChance = breakdown.DodgeChance;
 
-	// Gameplay special hackery for multi-shot display. -----------------------
-	if(iShotBreakdown != kBreakdown.FinalHitChance)
-	{
-		`log("Could this be bugged since i'm forward in time?");
-		ShotInfo.ModType = eHit_Success;
-		ShotInfo.Value = iShotBreakdown - kBreakdown.FinalHitChance;
-		ShotInfo.Reason = class'XLocalizedData'.default.MultiShotChance;
-		kBreakdown.Modifiers.AddItem(ShotInfo);
-		kBreakdown.FinalHitChance = iShotBreakdown;
-	}
+	`log("calcHitChance: " $ calcHitChance);
+	`log("critChance: " $ critChance);
+	`log("dodgeChance: " $ dodgeChance);
 
-	// fix for when aim chance is disabled. Should now show text perfect.
-	returnText = returnText $ " - ";
-
-	// All of the breakdowns and FinalHitChance without aimassist
-	calcHitChance = ((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance);
-	critChance = Clamp(kBreakdown.ResultTable[eHit_Crit], 0, 100);
-	dodgeChance = Clamp(kBreakdown.ResultTable[eHit_Graze], 0, 100);
+	// Add space
+	returnText = " ";
 
 	//Add Hit + Aim assist. Edit's CalcHitChance
 	if (SHOW_AIM_ASSIST_FLYOVERS)
@@ -316,16 +304,11 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 	`log("eX2AbilityToHitCalc_StandardAim: " $ ((X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) ? "true" : "false"));
 
 	//Aim Assist is not used on ReactionFire or if the BaseHitChance is less then MaxAimAssistScore
-	if (BaseHitChance > StandardAim.MaxAimAssistScore && !StandardAim.bReactionFire && X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
+	if (BaseHitChance > StandardAim.MaxAimAssistScore || StandardAim.bReactionFire || X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
 	{
 		`log("No aim assist");
 		return 0;
 	}
-
-	`log("BaseXComHitChanceModifier:" $ StandardAim.AimAssistDifficulties[CurrentDifficulty].BaseXComHitChanceModifier);
-	`log("ReasonableShotMinimumToEnableAimAssist:" $ StandardAim.ReasonableShotMinimumToEnableAimAssist);
-	`log("SoldiersLostXComHitChanceAdjustment:" $ StandardAim.AimAssistDifficulties[CurrentDifficulty].SoldiersLostXComHitChanceAdjustment);
-	`log("MissStreakChanceAdjustment:" $ StandardAim.AimAssistDifficulties[CurrentDifficulty].MissStreakChanceAdjustment);
 
 	// Cheating time and space!
 	HistoryIndex = AbilityContext.AssociatedState.HistoryIndex -1;

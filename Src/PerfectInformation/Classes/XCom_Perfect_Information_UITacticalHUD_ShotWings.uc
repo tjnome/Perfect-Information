@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_UITacticalHUD_ShotWings
+//	Author: tjnome, morionicidiot
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_UITacticalHUD_ShotWings extends UITacticalHUD_ShotWings config(PerfectInformation);
 
 var config bool SHOW_ALWAYS_SHOT_BREAKDOWN_HUD;

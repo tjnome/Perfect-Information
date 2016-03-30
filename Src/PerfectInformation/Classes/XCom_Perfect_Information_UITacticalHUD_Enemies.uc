@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_UITacticalHUD_Enemies
+//	Author: tjnome
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_UITacticalHUD_Enemies extends UITacticalHUD_Enemies config(PerfectInformation);
 
 var config bool SHOW_AIM_ASSIST_OVER_ENEMY_ICON;

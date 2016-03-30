@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_UITacticalHUD_SoldierInfoTooltip
+//	Author: tjnome
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_UITacticalHUD_SoldierInfoTooltip extends UITacticalHUD_SoldierInfoTooltip config(PerfectInformation);
 
 var localized string KILLS_LABEL;

@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_UITacticalHUD_EnemyTooltip
+//	Author: tjnome
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_UITacticalHUD_EnemyTooltip extends UITacticalHUD_EnemyTooltip config(PerfectInformation);
 
 var int StatsWidth;

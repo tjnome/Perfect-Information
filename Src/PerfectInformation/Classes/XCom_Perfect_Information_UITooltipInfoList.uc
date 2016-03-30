@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_UITooltipInfoList
+//	Author: tjnome
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_UITooltipInfoList extends UITooltipInfoList config(PerfectInformation);
 
 var config bool SHOW_EXTRA_WEAPONSTATS;

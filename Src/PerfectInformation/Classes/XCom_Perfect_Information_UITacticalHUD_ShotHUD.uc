@@ -1,6 +1,9 @@
 //-----------------------------------------------------------
-// tjnome at work...
+//	Class:	XCom_Perfect_Information_UITacticalHUD_ShotHUD
+//	Author: tjnome, morionicidiot
+//	
 //-----------------------------------------------------------
+
 class XCom_Perfect_Information_UITacticalHUD_ShotHUD extends UITacticalHUD_ShotHUD config(PerfectInformation);
 
 var config bool SHOW_AIM_ASSIST_MAIN_HUD;

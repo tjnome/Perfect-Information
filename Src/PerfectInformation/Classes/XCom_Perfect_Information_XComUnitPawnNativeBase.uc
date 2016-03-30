@@ -1,7 +1,12 @@
+//-----------------------------------------------------------
+//	Class:	XCom_Perfect_Information_XComUnitPawnNativeBase
+//	Author: morionicidiot
+//	
+//-----------------------------------------------------------
+
 class XCom_Perfect_Information_XComUnitPawnNativeBase extends XComUnitPawnNativeBase;
 
-// this mod applies the minimum damage preview to melee as well
-
+// This mod applies the minimum damage preview to melee as well
 function UpdateMeleeDamagePreview(XComGameState_BaseObject NewTargetObject, XComGameState_BaseObject OldTargetObject, XComGameState_Ability AbilityState)
 {
 	local XComPresentationLayer Pres;
