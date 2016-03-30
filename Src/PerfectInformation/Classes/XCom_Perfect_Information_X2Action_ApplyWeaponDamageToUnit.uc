@@ -53,6 +53,25 @@ simulated state Executing
 		SendMessage(outText, m_iDamage, 0, CritMessage, DamageTypeName == 'Psi'? eWDT_Psi : -1 ,UnitPawn.m_eTeamVisibilityFlags);
 	}
 
+	// Added in rare cases when all damage is absorbed to shield.
+	simulated function ShowShieldedMessage()
+	{
+		// Only show when there is no damage!
+		if (m_iDamage == 0) 
+		{
+			if (USE_SHORT_STRING_VERSION)
+				outText = GetVisualText();
+			else 
+				outText = class'XGLocalizedData'.default.ShieldedMessage $ GetVisualText();
+
+			SendMessage(outText, m_iShielded, 0, "", DamageTypeName == 'Psi'? eWDT_Psi : -1 ,UnitPawn.m_eTeamVisibilityFlags);
+		}
+		else
+		{
+			SendMessage(class'XGLocalizedData'.default.ShieldedMessage, m_iShielded, 0, "", DamageTypeName == 'Psi'? eWDT_Psi : -1 ,UnitPawn.m_eTeamVisibilityFlags);
+		}
+	}
+
 	// Add hit and later crit chance to miss output
 	simulated function ShowMissMessage()
 	{
