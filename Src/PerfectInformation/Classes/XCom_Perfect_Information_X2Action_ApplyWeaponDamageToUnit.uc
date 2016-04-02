@@ -206,6 +206,12 @@ function bool isGuaranteedHit()
 	// All Heavy Weapons have 100% static hit chance
 	if (IsHeavyWeapon()) return true;
 
+	//  For falling damage 
+	if (FallingContext != none) return true;
+	
+	// For Area damage
+	if (AreaDamageContext != None) return true;
+
 	return false;
 }
 
@@ -265,6 +271,12 @@ function bool GetStaticChance(out string msg)
 		}
 
 		if (IsHeavyWeapon() && !SHOW_GUARANTEED_HEAVY_WEAPON_FLYOVERS)
+		{
+			msg = "";
+			return true;
+		}
+
+		if (FallingContext != none)
 		{
 			msg = "";
 			return true;
