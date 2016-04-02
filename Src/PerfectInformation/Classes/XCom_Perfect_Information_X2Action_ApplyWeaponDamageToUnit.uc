@@ -22,6 +22,7 @@ var config bool USE_SHORT_STRING_VERSION;
 var config bool SHOW_GUARANTEED_HIT_FLYOVERS;
 var config bool SHOW_GUARANTEED_MISS_FLYOVERS;
 var config bool SHOW_GUARANTEED_GRENADE_FLYOVERS;
+var config bool SHOW_GUARANTEED_HEAVY_WEAPON_FLYOVERS;
 
 var config bool SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS;
 
@@ -137,6 +138,46 @@ function bool IsPersistent()
 	return false;
 }
 
+function bool IsHeavyWeapon()
+{
+	local XComGameState_Ability Ability;
+	local XComGameState_Item Item;
+	local name TemplateName;
+	local XComGameStateHistory History;
+
+	History = `XCOMHISTORY;
+
+	Ability = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
+	Item = XComGameState_Item(History.GetGameStateForObjectID(AbilityState.SourceWeapon.ObjectID));
+	TemplateName = Item.GetMyTemplateName();
+
+	switch (TemplateName)
+	{
+	case 'RocketLauncher':
+		return true;
+
+	case 'ShredderGun':
+		return true;
+
+	case 'Flamethrower':
+		return true;
+
+	case 'FlamethrowerMk2':
+		return true;
+
+	case 'BlasterLauncher':
+		return true;
+
+	case 'PlasmaBlaster':
+		return true;
+
+	case 'ShredstormCannon':
+		return true;
+	}
+	
+	return false; 
+}
+
 //If the damage a Grenade
 function bool IsGrenade()
 {
@@ -161,6 +202,9 @@ function bool isGuaranteedHit()
 
 	//Grenade has 100% chance to hit
 	if (IsGrenade()) return true;
+
+	// All Heavy Weapons have 100% static hit chance
+	if (IsHeavyWeapon()) return true;
 
 	return false;
 }
@@ -220,6 +264,12 @@ function bool GetStaticChance(out string msg)
 			return true;
 		}
 
+		if (IsHeavyWeapon() && !SHOW_GUARANTEED_HEAVY_WEAPON_FLYOVERS)
+		{
+			msg = "";
+			return true;
+		}
+
 		//Show GUARANTEED HIT or not
 		if (SHOW_GUARANTEED_HIT_FLYOVERS) 
 		{ 
@@ -256,7 +306,7 @@ function string GetChance()
 	ShooterState = XComGameState_Unit(History.GetGameStateForObjectID(Shooter.ObjectID));
 
 	// Getting information from older state!
-	`log("===== Checking unitname " $ ShooterState.GetFullName() $ " =======");
+	//`log("===== State After shot for unit name: " $ ShooterState.GetFullName() $ " =======");
 	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(ShooterState);
 	breakdown = unitBreakDown.getChanceBreakDown();
 
@@ -264,9 +314,12 @@ function string GetChance()
 	critChance = breakdown.CritChance;
 	dodgeChance = breakdown.DodgeChance;
 
+	/* Log uncessary after confirming values. Have them here as backup if needed.
+	`log("CalculatedHitChance: " $ XComGameStateContext_Ability(StateChangeContext).ResultContext.CalculatedHitChance);
 	`log("calcHitChance: " $ calcHitChance);
 	`log("critChance: " $ critChance);
 	`log("dodgeChance: " $ dodgeChance);
+	*/
 
 	// Add space
 	returnText = " ";
@@ -323,7 +376,7 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 	//Aim Assist is not used on ReactionFire or if the BaseHitChance is less then MaxAimAssistScore
 	if (BaseHitChance > StandardAim.MaxAimAssistScore || StandardAim.bReactionFire && X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
 	{
-		`log("===== No aim assist ===== ");
+		//`log("===== No aim assist ===== ");
 		return 0;
 	}
 
@@ -371,7 +424,7 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 				SoldiersLost * StandardAim.AimAssistDifficulties[CurrentDifficulty].SoldiersLostAlienHitChanceAdjustment; // -25
 		}
 	}
-	`log("===== Aim Assist: " $ ModifiedHitChance $ " =====");
+	//`log("===== Aim Assist: " $ ModifiedHitChance $ " =====");
 	ModifiedHitChance = Clamp(ModifiedHitChance, 0, StandardAim.MaxAimAssistScore);
 	return ModifiedHitChance - BaseHitChance;
 }
