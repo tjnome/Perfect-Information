@@ -73,18 +73,20 @@ simulated function string GetNumTurnsString(int NumTurns)
 	if(NumTurns > 0)
 		return string(NumTurns) @ "TURNS " @ Class'UIUtilities_Text'.static.GetColoredText("REMAINING", eUIState_Disabled); 
 	else 
-		return "";
+		return Chr(8734) @ "TURNS" @ Class'UIUtilities_Text'.static.GetColoredText("REMAINING", eUIState_Disabled);
 }
 
 simulated function onTextSizeRealized()
 {
 	local int iCalcNewHeight;
 
+	/*
 	if (Data.Cooldown > 0)
 		iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height; 
 	else 
 		iCalcNewHeight = Desc.Y + Desc.height + BottomPadding;
-
+	*/
+	iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height;
 	if (iCalcNewHeight != Height )
 	{
 		Height = iCalcNewHeight;  
