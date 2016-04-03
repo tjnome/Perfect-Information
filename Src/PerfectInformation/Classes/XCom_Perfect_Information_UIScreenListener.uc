@@ -84,17 +84,22 @@ function EventListenerReturn stateBeforeAbilityActivated(Object EventData, Objec
 	if(unitBreakDown == none) return ELR_NoInterrupt;
 
 	breakdown = unitBreakDown.getChanceBreakDown();
-	`log("===== Checking unitname " $ unit.GetFullName() $ " =======");
-	breakdown.HitChance = ((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance);
+	breakdown.HitChance = Clamp(((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance), 0, 100);
 	breakdown.CritChance = Clamp(kBreakdown.ResultTable[eHit_Crit], 0, 100);
 	breakdown.DodgeChance = Clamp(kBreakdown.ResultTable[eHit_Graze], 0, 100);
 
+	/*
+	`log("===== State before shot for unit name" $ unit.GetFullName() $ " =======");
 	`log("CalculatedHitChance: " $ ActivatedAbilityStateContext.ResultContext.CalculatedHitChance);
 	`log("calcHitChance: " $ ((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance));
 	`log("critChance: " $ Clamp(kBreakdown.ResultTable[eHit_Crit], 0, 100));
 	`log("dodgeChance: " $ Clamp(kBreakdown.ResultTable[eHit_Graze], 0, 100));
+	*/
 
 	return ELR_NoInterrupt;
 }
 
-
+defaultproperties
+{
+	ScreenClass=UITacticalHUD;
+}
