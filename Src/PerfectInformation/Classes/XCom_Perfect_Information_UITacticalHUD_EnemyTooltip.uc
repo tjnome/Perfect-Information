@@ -32,7 +32,7 @@ simulated function UIPanel InitEnemyStats(optional name InitName, optional name 
 	Title.SetPosition(PADDING_LEFT + 10, PADDING_TOP);
 	Title.SetSize(width - PADDING_LEFT - PADDING_RIGHT + 10, 32);
 
-	Line = class'UIUtilities_Controls'.static.CreateDividerLineBeneathControl( Title );
+	Line = class'UIUtilities_Controls'.static.CreateDividerLineBeneathControl(Title);
 
 	StatList = Spawn(class'UIStatList', BodyArea);
 	StatList.InitStatList('StatList',, PADDING_LEFT, PADDING_TOP + 36, BodyArea.width-PADDING_RIGHT, BodyArea.height-PADDING_BOTTOM, class'UIStatList'.default.PADDING_LEFT, class'UIStatList'.default.PADDING_RIGHT/2);

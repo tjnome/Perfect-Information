@@ -49,7 +49,7 @@ simulated state Executing
 		if (USE_SHORT_STRING_VERSION)
 			outText = GetVisualText();
 		else 
-			outText = UIMessage $ CritMessage $ GetVisualText();
+			outText = UIMessage $ CritMessage @ GetVisualText();
 
 		SendMessage(outText, m_iDamage, 0, CritMessage, DamageTypeName == 'Psi'? eWDT_Psi : -1 ,UnitPawn.m_eTeamVisibilityFlags);
 	}
@@ -63,7 +63,7 @@ simulated state Executing
 			if (USE_SHORT_STRING_VERSION)
 				outText = GetVisualText();
 			else 
-				outText = class'XGLocalizedData'.default.ShieldedMessage $ GetVisualText();
+				outText = class'XGLocalizedData'.default.ShieldedMessage @ GetVisualText();
 
 			SendMessage(outText, m_iShielded, 0, "", DamageTypeName == 'Psi'? eWDT_Psi : -1 ,UnitPawn.m_eTeamVisibilityFlags);
 		}
@@ -79,7 +79,7 @@ simulated state Executing
 		if (USE_SHORT_STRING_VERSION)
 			outText = GetVisualText();
 		else 
-			outText = class'XLocalizedData'.default.MissedMessage $ GetVisualText();
+			outText = class'XLocalizedData'.default.MissedMessage @ GetVisualText();
 		
 		if (m_iDamage > 0)
 		{
@@ -95,20 +95,20 @@ simulated state Executing
 	// Add GUARANTEED MISS to LightningReflexes output
 	simulated function ShowLightningReflexesMessage()
 	{
-		SendMessage(class'XLocalizedData'.default.LightningReflexesMessage $ GetVisualText());
+		SendMessage(class'XLocalizedData'.default.LightningReflexesMessage @ GetVisualText());
 	}
 
 	// Add GUARANTEED MISS to Untouchable output
 	simulated function ShowUntouchableMessage()
 	{
-		SendMessage(class'XLocalizedData'.default.UntouchableMessage $ GetVisualText());
+		SendMessage(class'XLocalizedData'.default.UntouchableMessage @ GetVisualText());
 	}
 
 	// Add % chance you had to kill target on output
 	simulated function ShowFreeKillMessage()
 	{	
 		if (SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS)
-			SendMessage(class'XLocalizedData'.default.FreeKillMessage $ REPEATER_KILL_MSG $ FreeKillChance() $ "%", , , , eWDT_Repeater);
+			SendMessage(class'XLocalizedData'.default.FreeKillMessage @ REPEATER_KILL_MSG @ FreeKillChance() $ "%", , , , eWDT_Repeater);
 		else
 			SendMessage(class'XLocalizedData'.default.FreeKillMessage, , , , eWDT_Repeater);
 	}
@@ -119,9 +119,10 @@ function SendMessage(string msg, optional int damage, optional int modifier, opt
 	local XComPresentationLayerBase kPres;
 	kPres = XComPlayerController(class'Engine'.static.GetCurrentWorldInfo().GetALocalPlayerController()).Pres;
 
+	// Something that is done untill firaxis fixes their shit.
 	if (CritMessage != "")
 	{
-		kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Attention, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , , modifier, , , eWDT);
+		kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Xcom, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , , modifier, , , eWDT);
 		
 		kPres.GetWorldMessenger().Message("", m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
 	}
@@ -341,9 +342,6 @@ function string GetChance()
 	`log("dodgeChance: " $ dodgeChance);
 	*/
 
-	// Add space
-	returnText = " ";
-
 	//Add Hit + Aim assist. Edit's CalcHitChance
 	if (SHOW_AIM_ASSIST_FLYOVERS)
 		calcHitChance = calcHitChance + (GetModifiedHitChance(XComGameState_Player(History.GetGameStateForObjectID(ShooterState.GetAssociatedPlayerID())), calcHitChance));
@@ -352,27 +350,27 @@ function string GetChance()
 	if (SHOW_HIT_CHANCE_FLYOVERS && !SHOW_MISS_CHANCE_FLYOVERS)
 	{
 		if (TargetState.GetMyTemplateName() == 'MimicBeacon')
-			returnText = (returnText $ HIT_CHANCE_MSG $ "100" $ "% ");
+			returnText = (returnText @ HIT_CHANCE_MSG $ "100" $ "% ");
 		else
-			returnText = (returnText $ HIT_CHANCE_MSG $ calcHitChance $ "% ");
+			returnText = (returnText @ HIT_CHANCE_MSG $ calcHitChance $ "% ");
 	}
 
 	// Outputs miss chance
 	if (SHOW_MISS_CHANCE_FLYOVERS)
-		returnText = (returnText $ MISS_CHANCE_MSG $ (100 - calcHitChance) $ "% ");
+		returnText = (returnText @ MISS_CHANCE_MSG $ (100 - calcHitChance) $ "% ");
 
 	//Add Crit Chance to returnText
-	if (SHOW_CRIT_CHANCE_FLYOVERS) returnText = (returnText $ CRIT_CHANCE_MSG $ critChance $ "% ");
+	if (SHOW_CRIT_CHANCE_FLYOVERS) returnText = (returnText @ CRIT_CHANCE_MSG $ critChance $ "% ");
 
 	//Add Dodge Chance to returnText
-	if (SHOW_DODGE_CHANCE_FLYOVERS) returnText = (returnText $ DODGE_CHANCE_MSG $ dodgeChance $ "% ");
+	if (SHOW_DODGE_CHANCE_FLYOVERS) returnText = (returnText @ DODGE_CHANCE_MSG $ dodgeChance $ "% ");
 
 	// No short version for miss yet!
 	if (USE_SHORT_STRING_VERSION)
 	{
 		//Reset text! Beta version!
 		if (SHOW_HIT_CHANCE_FLYOVERS && SHOW_CRIT_CHANCE_FLYOVERS && SHOW_DODGE_CHANCE_FLYOVERS)
-			returnText = "ATK:" $ calcHitChance $ "%" $ "|" $ critChance $ "%" $" - EVA:" $ dodgeChance $ "%";
+			returnText = "ATK:" @ calcHitChance @ "%" @ "|" $ critChance @ "%" @" - EVA:" @ dodgeChance @ "%";
 	}
 		
 	return returnText;

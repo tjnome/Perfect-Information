@@ -8,6 +8,8 @@ class XCom_Perfect_Information_UIEffectListItem extends UIEffectListItem;
 
 var UIText EffectiNumTurns;
 
+var localized string TURNS_REMAINING;
+
 simulated function UIEffectListItem InitEffectListItem(UIEffectList initList,
 															   optional int InitX = 0, 
 															   optional int InitY = 0, 
@@ -32,10 +34,10 @@ simulated function UIEffectListItem InitEffectListItem(UIEffectList initList,
 	Icon = Spawn(class'UIIcon', self).InitIcon(,,false,true,36);
 
 	Title = Spawn(class'UIScrollingText', self).InitScrollingText('Title', "", width,,,true);
-	Title.SetPosition( Icon.Y + Icon.width + TitleXPadding, TitleYPadding );
+	Title.SetPosition( Icon.Y + Icon.width + TitleXPadding, TitleYPadding);
 	Title.SetWidth(width - Title.X); 
 
-	Line = class'UIUtilities_Controls'.static.CreateDividerLineBeneathControl( Title );
+	Line = class'UIUtilities_Controls'.static.CreateDividerLineBeneathControl(Title);
 
 	Desc = Spawn(class'UIText', self).InitText('Desc', "", true);
 	Desc.SetWidth(width); 
@@ -61,32 +63,28 @@ simulated function RefreshDisplay()
 
 	Title.SetHTMLText(class'UIUtilities_Text'.static.StyleText(Data.Name, eUITextStyle_Tooltip_Title));
 	Desc.SetHTMLText(class'UIUtilities_Text'.static.StyleText(Data.Description, eUITextStyle_Tooltip_Body));
-	`log("Data.Cooldown: " $ Data.Cooldown);
 	EffectiNumTurns.SetText(GetNumTurnsString(Data.Cooldown));
 }
 
 simulated function string GetNumTurnsString(int NumTurns)
 {
-	local string Label; 
-
-	Label = class'XLocalizedData'.default.CooldownLabel;
 	if(NumTurns > 0)
-		return string(NumTurns) @ "TURNS " @ Class'UIUtilities_Text'.static.GetColoredText("REMAINING", eUIState_Disabled); 
+		return string(NumTurns) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
 	else 
-		return Chr(8734) @ "TURNS" @ Class'UIUtilities_Text'.static.GetColoredText("REMAINING", eUIState_Disabled);
+		return "";
+		//return Chr(8734) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
 }
 
 simulated function onTextSizeRealized()
 {
 	local int iCalcNewHeight;
 
-	/*
 	if (Data.Cooldown > 0)
 		iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height; 
 	else 
 		iCalcNewHeight = Desc.Y + Desc.height + BottomPadding;
-	*/
-	iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height;
+
+	//iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height;
 	if (iCalcNewHeight != Height )
 	{
 		Height = iCalcNewHeight;  
