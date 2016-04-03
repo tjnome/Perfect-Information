@@ -148,7 +148,6 @@ simulated function RefreshData()
 	}
 
 	// Now update the UI ------------------------------------------------------
-	`log("BreakDown!");
 
 	if (bMultiShots)
 		HitLabel.SetHtmlText(class'UIUtilities_Text'.static.StyleText(class'XLocalizedData'.default.MultiHitLabel, eUITextStyle_Tooltip_StatLabel));
