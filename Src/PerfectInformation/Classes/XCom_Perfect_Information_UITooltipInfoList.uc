@@ -1,6 +1,6 @@
 //-----------------------------------------------------------
 //	Class:	XCom_Perfect_Information_UITooltipInfoList
-//	Author: morionicidiot
+//	Author: tjnome, morionicidiot
 //	
 //-----------------------------------------------------------
 
