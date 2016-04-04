@@ -160,6 +160,8 @@ function bool IsHeavyWeapon()
 	Item = XComGameState_Item(History.GetGameStateForObjectID(Ability.SourceWeapon.ObjectID));
 	TemplateName = Item.GetMyTemplateName();
 
+	//`log("TemplateName: " $ TemplateName);
+
 	switch (TemplateName)
 	{
 	case 'RocketLauncher':
@@ -181,6 +183,12 @@ function bool IsHeavyWeapon()
 		return true;
 
 	case 'ShredstormCannon':
+		return true;
+
+	case 'AdvMEC_M1_Shoulder_WPN': // Heavy weapon on Mech_M1
+		return true;
+	
+	case 'AdvMEC_M2_Shoulder_WPN': // Heavy weapon on Mech_M2
 		return true;
 	}
 	
