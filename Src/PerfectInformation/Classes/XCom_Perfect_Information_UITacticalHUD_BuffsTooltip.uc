@@ -141,7 +141,7 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 			if (Persist != none && Persist.bDisplayInUI && Persist.BuffCategory == Category && Persist.IsEffectCurrentlyRelevant(EffectState, kGameStateUnit))
 			{
 				Item = EmptyItem;
-				FillUnitEffect(EffectState, Persist, false, Item);
+				FillUnitEffect(kGameStateUnit, EffectState, Persist, false, Item);
 				List.AddItem(Item);
 			}
 		}
@@ -155,7 +155,7 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 			if (Persist != none && Persist.bSourceDisplayInUI && Persist.SourceBuffCategory == Category && Persist.IsEffectCurrentlyRelevant(EffectState, kGameStateUnit))
 			{
 				Item = EmptyItem;
-				FillUnitEffect(EffectState, Persist, true, Item);
+				FillUnitEffect(kGameStateUnit, EffectState, Persist, true, Item);
 				List.AddItem(Item);
 			}
 		}
@@ -176,9 +176,10 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 	return List; 
 }
 
-function FillUnitEffect(const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
+function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
 {
 	local X2AbilityTag AbilityTag;
+	local X2Effect_Persistent PersistentEffect;
 	local string Damage;
 
 	AbilityTag = X2AbilityTag(`XEXPANDCONTEXT.FindTag("Ability"));
@@ -189,6 +190,11 @@ function FillUnitEffect(const XComGameState_Effect EffectState, const X2Effect_P
 		Summary.Name = Persist.SourceFriendlyName;
 		Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription);
 		Summary.Icon = Persist.SourceIconLabel;
+		`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
+		`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
+		`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
+		`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
+
 		if (Persist.bInfiniteDuration)
 			Summary.Cooldown = 0;
 		else
@@ -203,10 +209,25 @@ function FillUnitEffect(const XComGameState_Effect EffectState, const X2Effect_P
 		Summary.Name = Persist.FriendlyName;
 		Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription);
 		Summary.Icon = Persist.IconImage;
-		if (Persist.bInfiniteDuration)
-			Summary.Cooldown = 0;
+		`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
+		`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
+		`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
+		`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
+		`log("kGameStateUnit.StunnedThisTurn: " $ kGameStateUnit.StunnedThisTurn $ " =======");
+		`log("kGameStateUnit.StunnedActionPoints: " $ kGameStateUnit.StunnedActionPoints $ " =======");
+		`log("kGameStateUnit.ActionPoints.Length: " $ kGameStateUnit.ActionPoints.Length $ " =======");
+
+		Summary.Cooldown = 0;
+		if (Persist.bInfiniteDuration) 
+		{
+			if (kGameStateUnit.StunnedActionPoints > 0)
+				Summary.Cooldown = (class'X2CharacterTemplateManager'.default.StandardActionsPerTurn / kGameStateUnit.StunnedActionPoints);
+			else if(kGameStateUnit.StunnedThisTurn > 0 && kGameStateUnit.StunnedActionPoints == 0)
+				Summary.Cooldown = -1;
+		}
 		else
 			Summary.Cooldown = EffectState.iTurnsRemaining;
+
 		//Summary.Cooldown = 0; //TODO @jbouscher @bsteiner
 		Summary.Charges = 0; //TODO @jbouscher @bsteiner
 		Summary.AbilitySourceName = Persist.AbilitySourceName;

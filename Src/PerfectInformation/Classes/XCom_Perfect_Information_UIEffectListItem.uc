@@ -70,6 +70,8 @@ simulated function string GetNumTurnsString(int NumTurns)
 {
 	if(NumTurns > 0)
 		return string(NumTurns) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
+	else if (NumTurns == -1)
+		return string(0) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
 	else 
 		return "";
 		//return Chr(8734) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
@@ -79,7 +81,7 @@ simulated function onTextSizeRealized()
 {
 	local int iCalcNewHeight;
 
-	if (Data.Cooldown > 0)
+	if (Data.Cooldown != 0)
 		iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height; 
 	else 
 		iCalcNewHeight = Desc.Y + Desc.height + BottomPadding;
