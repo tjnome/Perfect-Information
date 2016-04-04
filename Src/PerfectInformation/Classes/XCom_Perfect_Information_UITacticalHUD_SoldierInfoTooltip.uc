@@ -57,6 +57,7 @@ simulated function UIPanel InitSoldierStats(optional name InitName, optional nam
 	BodyArea.InitPanel('BodyArea').SetPosition(0, 0);
 	BodyArea.width = StatsWidth;
 	BodyArea.height = StatsHeight;
+	BodyArea.SetAlpha(85); // Setting transparency
 
 	Spawn(class'UIPanel', BodyArea).InitPanel('BGBoxSimple', class'UIUtilities_Controls'.const.MC_X2BackgroundSimple).SetSize(StatsWidth, StatsHeight);
 	

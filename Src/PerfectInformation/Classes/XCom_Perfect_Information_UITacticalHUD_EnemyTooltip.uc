@@ -21,10 +21,11 @@ simulated function UIPanel InitEnemyStats(optional name InitName, optional name 
 
 	// --------------------
 
-	BodyArea = Spawn(class'UIPanel', self); 
+	BodyArea = Spawn(class'UIPanel', self);
 	BodyArea.InitPanel('BodyArea').SetPosition(0, 0);
 	BodyArea.width = StatsWidth;
 	BodyArea.height = StatsHeight;
+	BodyArea.SetAlpha(85); // Setting transparency
 
 	Spawn(class'UIPanel', BodyArea).InitPanel('BGBoxSimple', class'UIUtilities_Controls'.const.MC_X2BackgroundSimple).SetSize(BodyArea.width, BodyArea.height);
 

@@ -6,6 +6,59 @@
 
 class XCom_Perfect_Information_UITacticalHUD_BuffsTooltip extends UITacticalHUD_BuffsTooltip;
 
+simulated function UIPanel InitBonusesAndPenalties(optional name InitName, optional name InitLibID, optional bool bIsBonusPanel, optional bool bIsSoldier, optional float InitX = 0, optional float InitY = 0, optional bool bShowOnRight)
+{
+	InitPanel(InitName, InitLibID);
+
+	Hide();
+	SetPosition(InitX, InitY);
+	AnchorX = InitX; 
+	AnchorY = InitY; 
+	ShowOnRightSide = bShowOnRight;
+
+	ShowBonusHeader = bIsBonusPanel;
+	IsSoldierVersion = bIsSoldier;
+	
+	BGBox = Spawn(class'UIPanel', self).InitPanel('BGBoxSimple', class'UIUtilities_Controls'.const.MC_X2BackgroundSimple);
+	BGBox.SetWidth(width); // Height set in size callback
+	BGBox.SetAlpha(85);	// Setting transparency
+
+	// --------------------------------------------- 
+	Header = Spawn(class'UIPanel', self).InitPanel('HeaderArea').SetPosition(PADDING_LEFT,0);
+	Header.SetHeight(headerHeight);
+
+	if( bIsBonusPanel )
+		HeaderIcon = Spawn(class'UIPanel', Header).InitPanel('BonusIcon', class'UIUtilities_Controls'.const.MC_BonusIcon).SetSize(20,20);
+	else
+		HeaderIcon = Spawn(class'UIPanel', Header).InitPanel('PenaltyIcon', class'UIUtilities_Controls'.const.MC_PenaltyIcon).SetSize(20,20);
+	
+	HeaderIcon.SetY(8);
+
+	Title = Spawn(class'UIText', Header).InitText('Title');
+	Title.SetPosition(30, 2); 
+	Title.SetWidth(width - PADDING_LEFT - HeaderIcon.width); 
+	//Title.SetAlpha( class'UIUtilities_Text'.static.GetStyle(eUITextStyle_Tooltip_StatLabel).Alpha );
+		
+	// --------------------------------------------- 
+	
+	ItemList = Spawn(class'UIEffectList', self);
+	ItemList.InitEffectList('ItemList',
+		, 
+		PADDING_LEFT, 
+		PADDING_TOP + headerHeight, 
+		width-PADDING_LEFT-PADDING_RIGHT, 
+		Height-PADDING_TOP-PADDING_BOTTOM - headerHeight,
+		Height-PADDING_TOP-PADDING_BOTTOM - headerHeight,
+		MaxHeight,
+		OnEffectListSizeRealized);
+
+	ItemListMask = Spawn(class'UIMask', self).InitMask('Mask', ItemList).FitMask(ItemList); 
+
+	// --------------------------------------------- 
+
+	return self; 
+}
+
 simulated function RefreshData()
 {
 	local XGUnit						kActiveUnit;
@@ -126,6 +179,7 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 function FillUnitEffect(const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
 {
 	local X2AbilityTag AbilityTag;
+	local string Damage;
 
 	AbilityTag = X2AbilityTag(`XEXPANDCONTEXT.FindTag("Ability"));
 	AbilityTag.ParseObj = EffectState;
@@ -159,4 +213,37 @@ function FillUnitEffect(const XComGameState_Effect EffectState, const X2Effect_P
 	}
 
 	AbilityTag.ParseObj = None;
+}
+
+function array<string> FixDamageDescription(const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, X2AbilityTag AbilityTag)
+{
+	/*
+	local X2AbilityTemplate Template;
+	local name Type;
+	local int MaxDamage, MinDamage;
+
+	Template = kGameStateAbility.GetMyTemplate();
+	Type = Template.Name(InString);
+
+	//Switch to case if many more
+	if (Type == 'BURNDAMAGE')
+	{
+		AbilityTag.ex
+	}
+	*/	
+}
+
+// This should give me only numbers.
+static final function array<string> GetNumber(string s)
+{
+	local array<string> numbers;
+	local int i, c;
+
+	for (i = 0; i < Len(s); i++) {
+		c = Asc(Right(s, Len(s) - i));
+		if ( c == Clamp(c, 48, 57) ) // 0-9
+			numbers.AddItem(Chr(c));
+	}
+
+	return numbers;
 }
