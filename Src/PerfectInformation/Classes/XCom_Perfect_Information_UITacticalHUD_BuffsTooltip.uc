@@ -179,8 +179,6 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
 {
 	local X2AbilityTag AbilityTag;
-	local X2Effect_Persistent PersistentEffect;
-	local string Damage;
 
 	AbilityTag = X2AbilityTag(`XEXPANDCONTEXT.FindTag("Ability"));
 	AbilityTag.ParseObj = EffectState;

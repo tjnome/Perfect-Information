@@ -322,21 +322,17 @@ function string GetChance()
 {
 	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
 	local XCom_Perfect_Information_ChanceBreakDown breakdown;
-	local StateObjectReference Shooter, Target;
-	local XComGameState_Unit ShooterState, TargetState;
+	local XComGameState_Unit ShooterState;
 	local XComGameStateHistory History;
 	local string returnText;
 	local int critChance, dodgeChance, calcHitChance;
 
 	History = `XCOMHISTORY;
-	Shooter = AbilityContext.InputContext.SourceObject;
-	Target = AbilityContext.InputContext.PrimaryTarget;
-	TargetState = XComGameState_Unit(History.GetGameStateForObjectID(Target.ObjectID));
-	ShooterState = XComGameState_Unit(History.GetGameStateForObjectID(Shooter.ObjectID));
+	ShooterState = XComGameState_Unit(History.GetGameStateForObjectID(AbilityContext.InputContext.SourceObject.ObjectID));
 
 	// Getting information from older state!
 	//`log("===== State After shot for unit name: " $ ShooterState.GetFullName() $ " =======");
-	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(ShooterState);
+	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(UnitState);
 	breakdown = unitBreakDown.getChanceBreakDown();
 
 	calcHitChance = breakdown.HitChance;
@@ -357,7 +353,7 @@ function string GetChance()
 	// Outputs whatever the value is now (Hit with or without Assist). 
 	if (SHOW_HIT_CHANCE_FLYOVERS && !SHOW_MISS_CHANCE_FLYOVERS)
 	{
-		if (TargetState.GetMyTemplateName() == 'MimicBeacon')
+		if (UnitState.GetMyTemplateName() == 'MimicBeacon')
 			returnText = (returnText @ HIT_CHANCE_MSG $ "100" $ "% ");
 		else
 			returnText = (returnText @ HIT_CHANCE_MSG $ calcHitChance $ "% ");
