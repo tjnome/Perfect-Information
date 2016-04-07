@@ -108,13 +108,13 @@ simulated state Executing
 	simulated function ShowFreeKillMessage()
 	{	
 		if (SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS)
-			SendMessage(class'XLocalizedData'.default.FreeKillMessage @ REPEATER_KILL_MSG @ FreeKillChance() $ "%", , , , eWDT_Repeater);
+			SendMessage(class'XLocalizedData'.default.FreeKillMessage @ REPEATER_KILL_MSG @ FreeKillChance() $ "%", , , , eWDT_Repeater, , true);
 		else
 			SendMessage(class'XLocalizedData'.default.FreeKillMessage, , , , eWDT_Repeater);
 	}
 }
 
-function SendMessage(string msg, optional int damage, optional int modifier, optional string CritMessage, optional eWeaponDamageType eWDT, optional ETeam eBroadcastToTeams = eTeam_None)
+function SendMessage(string msg, optional int damage, optional int modifier, optional string CritMessage, optional eWeaponDamageType eWDT, optional ETeam eBroadcastToTeams = eTeam_None, optional bool NoDamage)
 {
 	local XComPresentationLayerBase kPres;
 	kPres = XComPlayerController(class'Engine'.static.GetCurrentWorldInfo().GetALocalPlayerController()).Pres;
@@ -128,7 +128,8 @@ function SendMessage(string msg, optional int damage, optional int modifier, opt
 	}
 	else
 	{
-		kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
+		if (NoDamage) kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Xcom, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
+		else kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
 	}
 }
 

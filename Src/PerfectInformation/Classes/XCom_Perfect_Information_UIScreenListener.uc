@@ -27,12 +27,19 @@ event OnInit(UIScreen Screen)
 	class'XCom_Perfect_Information_Utilities'.static.ensureEveryoneHaveUnitBreakDown();
 	EventManager.RegisterForEvent(selfObj, 'AbilityActivated', stateBeforeAbilityActivated, ELD_Immediate);
 	EventManager.RegisterForEvent(selfObj, 'UnitRemovedFromPlay', OnUnitRemovedFromPlay, ELD_OnStateSubmitted);
+	EventManager.RegisterForEvent(selfObj, 'ReinforcementSpawnerCreated', OnReinforcement, ELD_OnVisualizationBlockCompleted);
 }
 
 event OnRemoved(UIScreen Screen)
 {
 	// Cleanup unitstate that have been dismissed - credit amineri
 	class'XCom_Perfect_Information_Utilities'.static.cleanupDismissedUnits();
+}
+
+function EventListenerReturn OnReinforcement(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
+{
+	class'XCom_Perfect_Information_Utilities'.static.ensureEveryoneHaveUnitBreakDown();
+	return ELR_NoInterrupt;
 }
 
 // Event lisntner for unit removed. 
