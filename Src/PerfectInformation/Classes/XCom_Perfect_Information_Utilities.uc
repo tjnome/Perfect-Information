@@ -55,6 +55,39 @@ static function XCom_Perfect_Information_ChanceBreakDown_Unit ensureUnitBreakDow
 	return unitBreakDown;
 }
 
+static function cleanup() 
+{
+	local XComGameState newGameState;
+    local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
+
+	newGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Perfect Information Cleanup");
+	foreach `XCOMHISTORY.IterateByClassType(class'XCom_Perfect_Information_ChanceBreakDown_Unit', unitBreakDown,, true) 
+	{
+		//Check if it's exist
+		if(unitBreakDown.OwningObjectId > 0)
+			newGameState.RemoveStateObject(unitBreakDown.ObjectID);
+    }
+	
+    if(newGameState.GetNumGameStateObjects() > 0)
+        `GAMERULES.SubmitGameState(newGameState);
+    else
+        `XCOMHISTORY.CleanupPendingGameState(newGameState);
+		
+}
+
+static function checkAndClear()
+{
+	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
+
+	foreach `XCOMHISTORY.IterateByClassType(class'XCom_Perfect_Information_ChanceBreakDown_Unit', unitBreakDown,, true) 
+	{
+		//Check if it's exist
+		if(unitBreakDown.OwningObjectId > 0)
+			if (unitBreakDown.getChanceBreakDown().ShotData.length > 0)
+				unitBreakDown.getChanceBreakDown().ShotData.length = 0;
+    }			
+}
+
 // As recommended by Amineri -- NexusMods post (Credit Amineri)
 
 static function cleanupDismissedUnits() 
@@ -64,12 +97,12 @@ static function cleanupDismissedUnits()
     local XComGameState_Unit unit;
 
 	newGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Perfect Information Cleanup");
-	foreach `XCOMHISTORY.IterateByClassType(class'XCom_Perfect_Information_ChanceBreakDown_Unit', unitBreakDown,, true) {
-
-        //check if OwningObject is alive and exists
-        if( unitBreakDown.OwningObjectId > 0 ) {
+	foreach `XCOMHISTORY.IterateByClassType(class'XCom_Perfect_Information_ChanceBreakDown_Unit', unitBreakDown,, true)
+	{
+		//Check if it's exist
+        if(unitBreakDown.OwningObjectId > 0) {
             unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(unitBreakDown.OwningObjectID));
-            if( unit == none ) {
+            if(unit == none) {
                 newGameState.RemoveStateObject(unitBreakDown.ObjectID);
             }
             else {
@@ -80,7 +113,7 @@ static function cleanupDismissedUnits()
         }
     }
 	
-    if( newGameState.GetNumGameStateObjects() > 0 )
+    if(newGameState.GetNumGameStateObjects() > 0)
         `GAMERULES.SubmitGameState(newGameState);
     else
         `XCOMHISTORY.CleanupPendingGameState(newGameState);

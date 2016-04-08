@@ -325,6 +325,7 @@ function string GetChance()
 	local XCom_Perfect_Information_ChanceBreakDown breakdown;
 	local XComGameState_Unit ShooterState;
 	local XComGameStateHistory History;
+	local MyShotData shotdata;
 	local string returnText;
 	local int critChance, dodgeChance, calcHitChance;
 
@@ -335,17 +336,26 @@ function string GetChance()
 	//`log("===== State After shot for unit name: " $ ShooterState.GetFullName() $ " =======");
 	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(UnitState);
 	breakdown = unitBreakDown.getChanceBreakDown();
+	// Get shot data
+	foreach breakdown.ShotData(shotdata) 
+	{
+		if (shotdata.ShooterID == ShooterState.ObjectID && shotdata.AbilityName == AbilityTemplate.Name)
+			break;
+	}
 
-	calcHitChance = breakdown.HitChance;
-	critChance = breakdown.CritChance;
-	dodgeChance = breakdown.DodgeChance;
+	calcHitChance = shotdata.HitChance;
+	critChance = shotdata.CritChance;
+	dodgeChance = shotdata.DodgeChance;
 
-	/* Log uncessary after confirming values. Have them here as backup if needed.
-	`log("CalculatedHitChance: " $ XComGameStateContext_Ability(StateChangeContext).ResultContext.CalculatedHitChance);
+	// Remove if after getting the data.
+	breakdown.ShotData.RemoveItem(shotdata);
+
+	//Log uncessary after confirming values. Have them here as backup if needed.
+	`log("===== Ability Name: " $ AbilityTemplate.Name $ " =======");
+	`log("===== Target Name: " $ UnitState.GetFullName() $ " =======");
 	`log("calcHitChance: " $ calcHitChance);
 	`log("critChance: " $ critChance);
 	`log("dodgeChance: " $ dodgeChance);
-	*/
 
 	//Add Hit + Aim assist. Edit's CalcHitChance
 	if (SHOW_AIM_ASSIST_FLYOVERS)
@@ -447,7 +457,7 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 				SoldiersLost * StandardAim.AimAssistDifficulties[CurrentDifficulty].SoldiersLostAlienHitChanceAdjustment; // -25
 		}
 	}
-	//`log("===== Aim Assist: " $ ModifiedHitChance $ " =====");
+	`log("===== Aim Assist: " $ ModifiedHitChance $ " =====");
 	ModifiedHitChance = Clamp(ModifiedHitChance, 0, StandardAim.MaxAimAssistScore);
 	return ModifiedHitChance - BaseHitChance;
 }

@@ -7,13 +7,16 @@
 
 class XCom_Perfect_Information_ChanceBreakDown extends XComGameState_BaseObject;
 
-// Chance pulled from stateBeforeAbilityActivated 
-var int HitChance;
-var int CritChance;
-var int DodgeChance;
+// Chance pulled from stateBeforeAbilityActivated
+struct MyShotData
+{
+	var int		HitChance;
+	var int		CritChance;
+	var int		DodgeChance;
+	var int		ShooterID;
+	var Name	AbilityName;
+};
 
-// Initializing.
-function XCom_Perfect_Information_ChanceBreakDown initComponent() {
-	HitChance = 0; CritChance = 0; DodgeChance = 0;
-	return self;
-}
+// Array contains all elements.
+var array<MyShotData> ShotData;
+

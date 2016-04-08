@@ -13,8 +13,7 @@ function XCom_Perfect_Information_ChanceBreakDown_Unit InitComponent(XComGameSta
 	local XCom_Perfect_Information_ChanceBreakDown breakdown;
 	
 	breakdown = XCom_Perfect_Information_ChanceBreakDown(newGameState.CreateStateObject(class'XCom_Perfect_Information_ChanceBreakDown'));
-	breakdown.initComponent();
-	
+
 	mainStatsRef = breakdown.GetReference();
 	newGameState.AddStateObject(breakdown);
 	return self;

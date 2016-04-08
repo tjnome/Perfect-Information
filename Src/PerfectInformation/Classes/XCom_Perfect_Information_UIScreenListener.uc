@@ -23,11 +23,14 @@ event OnInit(UIScreen Screen)
 		return;
 	}
 
+	// Remove old if they exist 
+	class'XCom_Perfect_Information_Utilities'.static.cleanup();
 	// Add new UnitState 
 	class'XCom_Perfect_Information_Utilities'.static.ensureEveryoneHaveUnitBreakDown();
 	EventManager.RegisterForEvent(selfObj, 'AbilityActivated', stateBeforeAbilityActivated, ELD_Immediate);
 	EventManager.RegisterForEvent(selfObj, 'UnitRemovedFromPlay', OnUnitRemovedFromPlay, ELD_OnStateSubmitted);
 	EventManager.RegisterForEvent(selfObj, 'ReinforcementSpawnerCreated', OnReinforcement, ELD_OnVisualizationBlockCompleted);
+	EventManager.RegisterForEvent(selfObj, 'PlayerTurnBegun', OnPlayerTurnBegun, ELD_OnStateSubmitted);
 }
 
 event OnRemoved(UIScreen Screen)
@@ -36,14 +39,20 @@ event OnRemoved(UIScreen Screen)
 	class'XCom_Perfect_Information_Utilities'.static.cleanupDismissedUnits();
 }
 
-function EventListenerReturn OnReinforcement(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
+static function EventListenerReturn OnPlayerTurnBegun(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
+{
+	class'XCom_Perfect_Information_Utilities'.static.checkAndClear();
+	return ELR_NoInterrupt;
+}
+
+static function EventListenerReturn OnReinforcement(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
 {
 	class'XCom_Perfect_Information_Utilities'.static.ensureEveryoneHaveUnitBreakDown();
 	return ELR_NoInterrupt;
 }
 
 // Event lisntner for unit removed. 
-function EventListenerReturn OnUnitRemovedFromPlay(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
+static function EventListenerReturn OnUnitRemovedFromPlay(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
 {
 	local XComGameState_Unit UnitState;
 
@@ -102,11 +111,12 @@ function bool setBreakdown(XComGameState_Ability AbilityState, XComGameStateCont
 	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
 	local XCom_Perfect_Information_ChanceBreakDown breakdown;
 	local XComGameStateHistory History;
-	local XComGameState_Unit Unit;
+	local XComGameState_Unit Unit, ShooterUnit;
 	local ShotBreakdown kBreakdown;
 	local StateObjectReference Shooter;
 	local int iShotBreakdown;
 	local ShotModifierInfo ShotInfo;
+	local MyShotData shotdata;
 
 	History = `XCOMHISTORY;
 	Shooter = AbilityStateContext.InputContext.SourceObject;
@@ -126,18 +136,23 @@ function bool setBreakdown(XComGameState_Ability AbilityState, XComGameStateCont
 	}
 	//Unit = XComGameState_Unit(History.GetGameStateForObjectID(AvailTarget.PrimaryTarget.ObjectID));
 	Unit = XComGameState_Unit(History.GetGameStateForObjectID(Target.ObjectID));
+	ShooterUnit = XComGameState_Unit(History.GetGameStateForObjectID(Shooter.ObjectID));
 	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(Unit);
 
 	// Something went wrong
 	if(unitBreakDown == none) return true;
 
 	breakdown = unitBreakDown.getChanceBreakDown();
-	breakdown.HitChance = Clamp(((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance), 0, 100);
-	breakdown.CritChance = Clamp(kBreakdown.ResultTable[eHit_Crit], 0, 100);
-	breakdown.DodgeChance = Clamp(kBreakdown.ResultTable[eHit_Graze], 0, 100);
-	
+	shotdata.HitChance = Clamp(((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance), 0, 100);
+	shotdata.CritChance = Clamp(kBreakdown.ResultTable[eHit_Crit], 0, 100);
+	shotdata.DodgeChance = Clamp(kBreakdown.ResultTable[eHit_Graze], 0, 100);
+	shotdata.ShooterID = ShooterUnit.ObjectID;
+	shotdata.AbilityName = AbilityState.GetMyTemplate().Name;
+	breakdown.ShotData.AddItem(shotdata);
+
 	`log("===== Ability Name: " $ AbilityState.GetMyTemplate().Name $ " =======");
 	`log("===== Target Name: " $ Unit.GetFullName() $ " =======");
+	`log("===== bReactionFire: " $ X2AbilityToHitCalc_StandardAim(AbilityState.GetMyTemplate().AbilityToHitCalc).bReactionFire);
 	`log("CalculatedHitChance: " $ AbilityStateContext.ResultContext.CalculatedHitChance);
 	`log("calcHitChance: " $ ((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance));
 	`log("kBreakdown.MultiShotHitChance: " $ kBreakdown.MultiShotHitChance);
