@@ -23,14 +23,20 @@ event OnInit(UIScreen Screen)
 		return;
 	}
 
+	// Start CombatLog!
+	XComTacticalCheatManager(`XCOMGRI.GetALocalPlayerController().CheatManager).bCombatLog = true;
+	XComTacticalCheatManager(`XCOMGRI.GetALocalPlayerController().CheatManager).bDebugBadAreaLog = true;
+
 	// Remove old if they exist 
-	class'XCom_Perfect_Information_Utilities'.static.cleanup();
+	//class'XCom_Perfect_Information_Utilities'.static.cleanup();
 	// Add new UnitState 
 	class'XCom_Perfect_Information_Utilities'.static.ensureEveryoneHaveUnitBreakDown();
 	EventManager.RegisterForEvent(selfObj, 'AbilityActivated', stateBeforeAbilityActivated, ELD_Immediate);
 	EventManager.RegisterForEvent(selfObj, 'UnitRemovedFromPlay', OnUnitRemovedFromPlay, ELD_OnStateSubmitted);
 	EventManager.RegisterForEvent(selfObj, 'ReinforcementSpawnerCreated', OnReinforcement, ELD_OnVisualizationBlockCompleted);
-	EventManager.RegisterForEvent(selfObj, 'PlayerTurnBegun', OnPlayerTurnBegun, ELD_OnStateSubmitted);
+	EventManager.RegisterForEvent(selfObj, 'PlayerTurnBegun', OnPlayerTurnBegun, ELD_OnVisualizationBlockCompleted);
+	`log("===== AllEventListenersToString $ =======");
+	`log(EventManager.AllEventListenersToString());
 }
 
 event OnRemoved(UIScreen Screen)

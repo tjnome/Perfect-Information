@@ -68,23 +68,25 @@ static function cleanup()
 			newGameState.RemoveStateObject(unitBreakDown.ObjectID);
     }
 	
-    if(newGameState.GetNumGameStateObjects() > 0)
-        `GAMERULES.SubmitGameState(newGameState);
-    else
-        `XCOMHISTORY.CleanupPendingGameState(newGameState);
+    `GAMERULES.SubmitGameState(newGameState);
+
 		
 }
 
 static function checkAndClear()
 {
 	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
+	local XCom_Perfect_Information_ChanceBreakDown breakdown;
 
 	foreach `XCOMHISTORY.IterateByClassType(class'XCom_Perfect_Information_ChanceBreakDown_Unit', unitBreakDown,, true) 
 	{
 		//Check if it's exist
 		if(unitBreakDown.OwningObjectId > 0)
-			if (unitBreakDown.getChanceBreakDown().ShotData.length > 0)
-				unitBreakDown.getChanceBreakDown().ShotData.length = 0;
+		{
+			breakdown = unitBreakDown.getChanceBreakDown();
+			// Clear Array
+			breakdown.ShotData.Remove(0, breakdown.ShotData.Length);
+		}
     }			
 }
 
@@ -113,10 +115,7 @@ static function cleanupDismissedUnits()
         }
     }
 	
-    if(newGameState.GetNumGameStateObjects() > 0)
-        `GAMERULES.SubmitGameState(newGameState);
-    else
-        `XCOMHISTORY.CleanupPendingGameState(newGameState);
+	`GAMERULES.SubmitGameState(newGameState);
 }
 
 
