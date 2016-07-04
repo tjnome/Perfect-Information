@@ -188,10 +188,10 @@ function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameS
 		Summary.Name = Persist.SourceFriendlyName;
 		Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription);
 		Summary.Icon = Persist.SourceIconLabel;
-		`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
-		`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
-		`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
-		`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
+		//`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
+		//`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
+		//`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
+		//`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
 
 		if (Persist.bInfiniteDuration)
 			Summary.Cooldown = 0;
@@ -207,13 +207,13 @@ function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameS
 		Summary.Name = Persist.FriendlyName;
 		Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription);
 		Summary.Icon = Persist.IconImage;
-		`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
-		`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
-		`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
-		`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
-		`log("kGameStateUnit.StunnedThisTurn: " $ kGameStateUnit.StunnedThisTurn $ " =======");
-		`log("kGameStateUnit.StunnedActionPoints: " $ kGameStateUnit.StunnedActionPoints $ " =======");
-		`log("kGameStateUnit.ActionPoints.Length: " $ kGameStateUnit.ActionPoints.Length $ " =======");
+		//`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
+		//`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
+		//`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
+		//`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
+		//`log("kGameStateUnit.StunnedThisTurn: " $ kGameStateUnit.StunnedThisTurn $ " =======");
+		//`log("kGameStateUnit.StunnedActionPoints: " $ kGameStateUnit.StunnedActionPoints $ " =======");
+		//`log("kGameStateUnit.ActionPoints.Length: " $ kGameStateUnit.ActionPoints.Length $ " =======");
 
 		Summary.Cooldown = 0;
 		if (Persist.bInfiniteDuration) 

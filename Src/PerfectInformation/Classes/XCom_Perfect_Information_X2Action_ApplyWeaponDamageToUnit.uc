@@ -6,6 +6,7 @@
 
 class XCom_Perfect_Information_X2Action_ApplyWeaponDamageToUnit extends X2Action_ApplyWeaponDamageToUnit config(PerfectInformation);
 
+var config int Version;
 var config bool SHOW_FLYOVERS_ON_XCOM_TURN;
 var config bool SHOW_FLYOVERS_ON_ENEMY_TURN;
 var config bool SHOW_FLYOVERS_ONLY_ON_REACTION_SHOT;
@@ -21,8 +22,8 @@ var config bool USE_SHORT_STRING_VERSION;
 
 var config bool SHOW_GUARANTEED_HIT_FLYOVERS;
 var config bool SHOW_GUARANTEED_MISS_FLYOVERS;
-var config bool SHOW_GUARANTEED_GRENADE_FLYOVERS;
-var config bool SHOW_GUARANTEED_HEAVY_WEAPON_FLYOVERS;
+//var config bool SHOW_GUARANTEED_GRENADE_FLYOVERS;
+//var config bool SHOW_GUARANTEED_HEAVY_WEAPON_FLYOVERS;
 
 var config bool SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS;
 
@@ -107,7 +108,7 @@ simulated state Executing
 	// Add % chance you had to kill target on output
 	simulated function ShowFreeKillMessage()
 	{	
-		if (SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS)
+		if (getSHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS())
 			SendMessage(class'XLocalizedData'.default.FreeKillMessage @ REPEATER_KILL_MSG @ FreeKillChance() $ "%", , , , eWDT_Repeater, , true);
 		else
 			SendMessage(class'XLocalizedData'.default.FreeKillMessage, , , , eWDT_Repeater);
@@ -122,14 +123,16 @@ function SendMessage(string msg, optional int damage, optional int modifier, opt
 	// Something that is done untill firaxis fixes their shit.
 	if (CritMessage != "")
 	{
-		kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Xcom, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , , modifier, , , eWDT);
+		kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Xcom, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, getDURATION_DAMAGE_FLYOVERS(), class'XComUIBroadcastWorldMessage_DamageDisplay', , , modifier, , , eWDT);
 		
-		kPres.GetWorldMessenger().Message("", m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
+		kPres.GetWorldMessenger().Message("", m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, getDURATION_DAMAGE_FLYOVERS(), class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
 	}
 	else
 	{
-		if (NoDamage) kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Xcom, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
-		else kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, DURATION_DAMAGE_FLYOVERS, class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
+		if (NoDamage) 
+			kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Xcom, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, getDURATION_DAMAGE_FLYOVERS(), class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
+		else 
+			kPres.GetWorldMessenger().Message(msg, m_vHitLocation, Unit.GetVisualizedStateReference(), eColor_Bad, class'UIWorldMessageMgr'.const.FXS_MSG_BEHAVIOR_FLOAT, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_ID, eBroadcastToTeams, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_USE_SCREEN_LOC_PARAM, class'UIWorldMessageMgr'.default.DAMAGE_DISPLAY_DEFAULT_SCREEN_LOC, getDURATION_DAMAGE_FLYOVERS(), class'XComUIBroadcastWorldMessage_DamageDisplay', , damage, modifier, CritMessage, , eWDT);
 	}
 }
 
@@ -146,54 +149,6 @@ function bool IsPersistent()
 		return true;
 
 	return false;
-}
-
-function bool IsHeavyWeapon()
-{
-	local XComGameState_Ability Ability;
-	local XComGameState_Item Item;
-	local name TemplateName;
-	local XComGameStateHistory History;
-
-	History = `XCOMHISTORY;
-
-	Ability = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
-	Item = XComGameState_Item(History.GetGameStateForObjectID(Ability.SourceWeapon.ObjectID));
-	TemplateName = Item.GetMyTemplateName();
-
-	//`log("TemplateName: " $ TemplateName);
-
-	switch (TemplateName)
-	{
-	case 'RocketLauncher':
-		return true;
-
-	case 'ShredderGun':
-		return true;
-
-	case 'Flamethrower':
-		return true;
-
-	case 'FlamethrowerMk2':
-		return true;
-
-	case 'BlasterLauncher':
-		return true;
-
-	case 'PlasmaBlaster':
-		return true;
-
-	case 'ShredstormCannon':
-		return true;
-
-	case 'AdvMEC_M1_Shoulder_WPN': // Heavy weapon on Mech_M1
-		return true;
-	
-	case 'AdvMEC_M2_Shoulder_WPN': // Heavy weapon on Mech_M2
-		return true;
-	}
-	
-	return false; 
 }
 
 //If the damage a Grenade
@@ -218,11 +173,14 @@ function bool isGuaranteedHit()
 	//If ability has 100% chance to hit because of DeadEye
 	if (X2AbilityToHitCalc_DeadEye(AbilityTemplate.AbilityToHitCalc) != None) return true;
 
+	if ( X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None ) {
+		if ( X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc).bGuaranteedHit ) {
+			return true;
+		}
+	}
+
 	//Grenade has 100% chance to hit
 	if (IsGrenade()) return true;
-
-	// All Heavy Weapons have 100% static hit chance
-	if (IsHeavyWeapon()) return true;
 
 	//  For falling damage 
 	if (FallingContext != none) return true;
@@ -250,13 +208,13 @@ function string GetVisualText()
 	if (IsPersistent()) return "";
 
 	//If XCom soldier shooting and not suppose to show. Hide chances
-	if (!isEnemyTeam() && !SHOW_FLYOVERS_ON_XCOM_TURN) return "";
+	if (!isEnemyTeam() && !getSHOW_FLYOVERS_ON_XCOM_TURN()) return "";
 
 	//If Enemy soldier shooting and not suppose to show. Hide chances
-	if (isEnemyTeam() && !SHOW_FLYOVERS_ON_ENEMY_TURN) return "";
+	if (isEnemyTeam() && !getSHOW_FLYOVERS_ON_ENEMY_TURN()) return "";
 
 	//If shot is not a reaction shot and if only show reaction shot. Return nothing
-	if (!isReactionFire() && SHOW_FLYOVERS_ONLY_ON_REACTION_SHOT) return ""; 
+	if (!isReactionFire() && getSHOW_FLYOVERS_ONLY_ON_REACTION_SHOT()) return ""; 
 
 	// Return msg text if it's a StaticChance
 	if (GetStaticChance(msg))
@@ -281,19 +239,6 @@ function bool GetStaticChance(out string msg)
 
 	if (isGuaranteedHit())
 	{
-		// Check if damage is Grenade.
-		if (IsGrenade() && !SHOW_GUARANTEED_GRENADE_FLYOVERS)
-		{
-			msg = "";
-			return true;
-		}
-
-		if (IsHeavyWeapon() && !SHOW_GUARANTEED_HEAVY_WEAPON_FLYOVERS)
-		{
-			msg = "";
-			return true;
-		}
-
 		if (FallingContext != none)
 		{
 			msg = "";
@@ -301,7 +246,7 @@ function bool GetStaticChance(out string msg)
 		}
 
 		//Show GUARANTEED HIT or not
-		if (SHOW_GUARANTEED_HIT_FLYOVERS) 
+		if (getSHOW_GUARANTEED_HIT_FLYOVERS()) 
 		{ 
 			msg = GUARANTEED_HIT_MSG;
 			return true;
@@ -309,7 +254,7 @@ function bool GetStaticChance(out string msg)
 	}
 
 	// Untouchable and LightningReflexes will show GUARANTEED MISS
-	if ((HitResult == eHit_LightningReflexes || HitResult == eHit_Untouchable) && (SHOW_GUARANTEED_MISS_FLYOVERS))
+	if ((HitResult == eHit_LightningReflexes || HitResult == eHit_Untouchable) && (getSHOW_GUARANTEED_MISS_FLYOVERS()))
 	{ 
 		msg = GUARANTEED_MISS_MSG;
 		return true;
@@ -321,48 +266,40 @@ function bool GetStaticChance(out string msg)
 // Return with chance string
 function string GetChance()
 {
-	local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
-	local XCom_Perfect_Information_ChanceBreakDown breakdown;
+	//local XCom_Perfect_Information_ChanceBreakDown_Unit unitBreakDown;
+	//local XCom_Perfect_Information_ChanceBreakDown breakdown;
 	local XComGameState_Unit ShooterState;
 	local XComGameStateHistory History;
-	local MyShotData shotdata;
+	//local MyShotData shotdata;
 	local string returnText;
 	local int critChance, dodgeChance, calcHitChance;
+	local ShotBreakdown		TargetBreakdown;
+	local int OldHistoryIndex;
 
 	History = `XCOMHISTORY;
 	ShooterState = XComGameState_Unit(History.GetGameStateForObjectID(AbilityContext.InputContext.SourceObject.ObjectID));
 
-	// Getting information from older state!
-	//`log("===== State After shot for unit name: " $ ShooterState.GetFullName() $ " =======");
-	unitBreakDown = class'XCom_Perfect_Information_Utilities'.static.ensureUnitBreakDown(UnitState);
-	breakdown = unitBreakDown.getChanceBreakDown();
-	// Get shot data
-	foreach breakdown.ShotData(shotdata) 
-	{
-		if (shotdata.ShooterID == ShooterState.ObjectID && shotdata.AbilityName == AbilityTemplate.Name)
-			break;
-	}
-
-	calcHitChance = shotdata.HitChance;
-	critChance = shotdata.CritChance;
-	dodgeChance = shotdata.DodgeChance;
-
-	// Remove if after getting the data.
-	breakdown.ShotData.RemoveItem(shotdata);
+	TargetBreakdown = XCom_Perfect_Information_AbilityContext(AbilityContext).TargetBreakdown;
+	//calcHitChance = TargetBreakdown.ResultTable[eHit_Success] + TargetBreakdown.ResultTable[eHit_Crit] + TargetBreakdown.ResultTable[eHit_Graze];
+	calcHitChance = AbilityContext.ResultContext.CalculatedHitChance;
+	critChance = TargetBreakdown.ResultTable[eHit_Crit];
+	dodgeChance = TargetBreakdown.ResultTable[eHit_Graze];
 
 	//Log uncessary after confirming values. Have them here as backup if needed.
-	`log("===== Ability Name: " $ AbilityTemplate.Name $ " =======");
-	`log("===== Target Name: " $ UnitState.GetFullName() $ " =======");
-	`log("calcHitChance: " $ calcHitChance);
-	`log("critChance: " $ critChance);
-	`log("dodgeChance: " $ dodgeChance);
+	//`log("===== Ability Name: " $ AbilityTemplate.Name $ " =======");
+	//`log("===== Target Name: " $ UnitState.GetFullName() $ " =======");
+	//`log("calcHitChance: " $ calcHitChance);
+	//`log("critChance: " $ critChance);
+	//`log("dodgeChance: " $ dodgeChance);
 
 	//Add Hit + Aim assist. Edit's CalcHitChance
-	if (SHOW_AIM_ASSIST_FLYOVERS)
-		calcHitChance = calcHitChance + (GetModifiedHitChance(XComGameState_Player(History.GetGameStateForObjectID(ShooterState.GetAssociatedPlayerID())), calcHitChance));
+	if (getSHOW_AIM_ASSIST_FLYOVERS()) {
+		OldHistoryIndex = AbilityContext.AssociatedState.HistoryIndex - 1;
+		calcHitChance = GetModifiedHitChance(XComGameState_Player(History.GetGameStateForObjectID(ShooterState.GetAssociatedPlayerID(),,OldHistoryIndex)), calcHitChance);
+	}
 
 	// Outputs whatever the value is now (Hit with or without Assist). 
-	if (SHOW_HIT_CHANCE_FLYOVERS && !SHOW_MISS_CHANCE_FLYOVERS)
+	if (getSHOW_HIT_CHANCE_FLYOVERS() && !getSHOW_MISS_CHANCE_FLYOVERS())
 	{
 		if (UnitState.GetMyTemplateName() == 'MimicBeacon')
 			returnText = (returnText @ HIT_CHANCE_MSG $ "100" $ "% ");
@@ -371,20 +308,20 @@ function string GetChance()
 	}
 
 	// Outputs miss chance
-	if (SHOW_MISS_CHANCE_FLYOVERS)
+	if (getSHOW_MISS_CHANCE_FLYOVERS())
 		returnText = (returnText @ MISS_CHANCE_MSG $ (100 - calcHitChance) $ "% ");
 
 	//Add Crit Chance to returnText
-	if (SHOW_CRIT_CHANCE_FLYOVERS) returnText = (returnText @ CRIT_CHANCE_MSG $ critChance $ "% ");
+	if (getSHOW_CRIT_CHANCE_FLYOVERS()) returnText = (returnText @ CRIT_CHANCE_MSG $ critChance $ "% ");
 
 	//Add Dodge Chance to returnText
-	if (SHOW_DODGE_CHANCE_FLYOVERS) returnText = (returnText @ DODGE_CHANCE_MSG $ dodgeChance $ "% ");
+	if (getSHOW_DODGE_CHANCE_FLYOVERS()) returnText = (returnText @ DODGE_CHANCE_MSG $ dodgeChance $ "% ");
 
 	// No short version for miss yet!
-	if (USE_SHORT_STRING_VERSION)
+	if (getUSE_SHORT_STRING_VERSION())
 	{
 		//Reset text! Beta version!
-		if (SHOW_HIT_CHANCE_FLYOVERS && SHOW_CRIT_CHANCE_FLYOVERS && SHOW_DODGE_CHANCE_FLYOVERS)
+		if (getSHOW_HIT_CHANCE_FLYOVERS() && getSHOW_CRIT_CHANCE_FLYOVERS() && getSHOW_DODGE_CHANCE_FLYOVERS())
 			returnText = "ATK:" @ calcHitChance @ "%" @ "|" $ critChance @ "%" @" - EVA:" @ dodgeChance @ "%";
 	}
 		
@@ -394,72 +331,26 @@ function string GetChance()
 // Returns aim assist score.
 function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChance)
 {
-	local int CurrentLivingSoldiers, SoldiersLost, ModifiedHitChance, CurrentDifficulty, HistoryIndex;
-
-	local XComGameStateHistory History;
-	local XComGameState_Unit kUnit;
 	local X2AbilityToHitCalc_StandardAim StandardAim;
-	local XComGameState_Player BackInTimeShooter;
-
+	local int ModifiedChance;
+	
 	StandardAim = X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc);
-	ModifiedHitChance = BaseHitChance;
-	CurrentDifficulty = `DIFFICULTYSETTING;
-	History = `XCOMHISTORY;
+	
+	if ( StandardAim == none )
+		return BaseHitChance;
+	else
+		ModifiedChance = StandardAim.GetModifiedHitChanceForCurrentDifficulty(Shooter, BaseHitChance);
 
-	//Aim Assist is not used on ReactionFire or if the BaseHitChance is less then MaxAimAssistScore
-	if (BaseHitChance > StandardAim.MaxAimAssistScore || StandardAim.bReactionFire && X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc) != None) 
-	{
-		//`log("===== No aim assist ===== ");
-		return 0;
+	if ( Shooter.TeamFlag == eTeam_XCom ) {
+		if ( ModifiedChance < BaseHitChance )
+			ModifiedChance = BaseHitChance;
+	}
+	else if ( Shooter.TeamFlag == eTeam_Alien ) {
+		if ( ModifiedChance > BaseHitChance )
+			ModifiedChance = BaseHitChance;
 	}
 
-	// Cheating time and space!
-	HistoryIndex = AbilityContext.AssociatedState.HistoryIndex -1;
-	BackInTimeShooter = XComGameState_Player(History.GetGameStateForObjectID(Shooter.ObjectID, , HistoryIndex));
-
-	CurrentLivingSoldiers = 0;
-	foreach History.IterateByClassType(class'XComGameState_Unit', kUnit)
-	{
-		if(kUnit.GetTeam() == eTeam_XCom && !kUnit.bRemovedFromPlay && kUnit.IsAlive() && !kUnit.GetMyTemplate().bIsCosmetic)
-		{
-			++CurrentLivingSoldiers;
-		}
-	}
-
-	// If unit died beacuse of the shot. Do not calculated him into the modifiere for the shot
-	if (UnitState.IsDead()) {
-		if( UnitState.GetTeam() == eTeam_XCom)
-		{
-			CurrentLivingSoldiers = -1;
-		}
-
-	}
-
-	SoldiersLost = Max(0, StandardAim.NormalSquadSize - CurrentLivingSoldiers);
-	if(Shooter.TeamFlag == eTeam_XCom)
-	{
-		ModifiedHitChance = BaseHitChance * StandardAim.AimAssistDifficulties[CurrentDifficulty].BaseXComHitChanceModifier; // 1.2
-		if(BaseHitChance >= StandardAim.ReasonableShotMinimumToEnableAimAssist) // 50
-		{
-			ModifiedHitChance +=
-				BackInTimeShooter.MissStreak * StandardAim.AimAssistDifficulties[CurrentDifficulty].MissStreakChanceAdjustment + // 20
-				SoldiersLost * StandardAim.AimAssistDifficulties[CurrentDifficulty].SoldiersLostXComHitChanceAdjustment; // 15
-		}
-	}
-	// Aliens get -10% chance to hit for each consecutive hit made already this turn; this only applies if the XCom currently has less than 5 units alive
-	else if(Shooter.TeamFlag == eTeam_Alien)
-	{
-		if(CurrentLivingSoldiers <= StandardAim.NormalSquadSize) // 4
-		{
-			ModifiedHitChance =
-				BaseHitChance +
-				BackInTimeShooter.HitStreak * StandardAim.AimAssistDifficulties[CurrentDifficulty].HitStreakChanceAdjustment + // -10
-				SoldiersLost * StandardAim.AimAssistDifficulties[CurrentDifficulty].SoldiersLostAlienHitChanceAdjustment; // -25
-		}
-	}
-	`log("===== Aim Assist: " $ ModifiedHitChance $ " =====");
-	ModifiedHitChance = Clamp(ModifiedHitChance, 0, StandardAim.MaxAimAssistScore);
-	return ModifiedHitChance - BaseHitChance;
+	return ModifiedChance;
 }
 
 // Returns with Repeater chance 
@@ -485,4 +376,102 @@ function int FreeKillChance()
 		FreeKillChance += UpgradeTemplates[i].FreeKillChance;
 	}
 	return FreeKillChance;
+}
+
+static function bool GetSHOW_FLYOVERS_ON_XCOM_TURN() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_FLYOVERS_ON_XCOM_TURN;
+	else
+		return default.SHOW_FLYOVERS_ON_XCOM_TURN;
+}
+
+static function bool GetSHOW_FLYOVERS_ON_ENEMY_TURN() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_FLYOVERS_ON_ENEMY_TURN;
+	else
+		return default.SHOW_FLYOVERS_ON_ENEMY_TURN;
+}
+
+static function bool GetSHOW_FLYOVERS_ONLY_ON_REACTION_SHOT() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_FLYOVERS_ONLY_ON_REACTION_SHOT;
+	else
+		return default.SHOW_FLYOVERS_ONLY_ON_REACTION_SHOT;
+}
+
+static function bool GetSHOW_AIM_ASSIST_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_AIM_ASSIST_FLYOVERS;
+	else
+		return default.SHOW_AIM_ASSIST_FLYOVERS;
+}
+
+static function bool GetSHOW_HIT_CHANCE_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_HIT_CHANCE_FLYOVERS;
+	else
+		return default.SHOW_HIT_CHANCE_FLYOVERS;
+}
+
+static function bool GetSHOW_CRIT_CHANCE_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_CRIT_CHANCE_FLYOVERS;
+	else
+		return default.SHOW_CRIT_CHANCE_FLYOVERS;
+}
+
+static function bool GetSHOW_DODGE_CHANCE_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_DODGE_CHANCE_FLYOVERS;
+	else
+		return default.SHOW_DODGE_CHANCE_FLYOVERS;
+}
+
+static function bool GetSHOW_MISS_CHANCE_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_MISS_CHANCE_FLYOVERS;
+	else
+		return default.SHOW_MISS_CHANCE_FLYOVERS;
+}
+
+static function bool GetUSE_SHORT_STRING_VERSION() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.USE_SHORT_STRING_VERSION;
+	else
+		return default.USE_SHORT_STRING_VERSION;
+}
+
+static function bool GetSHOW_GUARANTEED_HIT_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_GUARANTEED_HIT_FLYOVERS;
+	else
+		return default.SHOW_GUARANTEED_HIT_FLYOVERS;
+}
+
+static function bool GetSHOW_GUARANTEED_MISS_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_GUARANTEED_MISS_FLYOVERS;
+	else
+		return default.SHOW_GUARANTEED_MISS_FLYOVERS;
+}
+
+static function bool GetSHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.SETTINGS_CHANGED ) 
+		return class'XCom_Perfect_Information_MCMListener'.default.SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS;
+	else
+		return default.SHOW_REPEATER_CHANCE_ON_FREEKILL_FLYOVERS;
+}
+
+static function float GetDURATION_DAMAGE_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.DURATION_DAMAGE_FLYOVERS > 0 )
+		return class'XCom_Perfect_Information_MCMListener'.default.DURATION_DAMAGE_FLYOVERS;
+	else
+		return default.DURATION_DAMAGE_FLYOVERS;
+}
+
+static function float GetDURATION_GUARANTEED_FLYOVERS() {
+	if ( class'XCom_Perfect_Information_MCMListener'.default.DURATION_GUARANTEED_FLYOVERS > 0 )
+		return class'XCom_Perfect_Information_MCMListener'.default.DURATION_GUARANTEED_FLYOVERS;
+	else
+		return default.DURATION_GUARANTEED_FLYOVERS;
 }

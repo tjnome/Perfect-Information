@@ -75,7 +75,7 @@ simulated function ShowTooltip()
 	local int ScrollHeight;
 
 	//Trigger only on the correct hover item 
-	if( class'UITacticalHUD_BuffsTooltip'.static.IsPathBonusOrPenaltyMC(currentPath) ) return;
+	if( class'XCom_Perfect_Information_UITacticalHUD_BuffsTooltip'.static.IsPathBonusOrPenaltyMC(currentPath) ) return;
 
 	RefreshData();
 	

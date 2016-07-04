@@ -21,7 +21,7 @@ simulated function UIEffectListItem InitEffectListItem(UIEffectList initList,
 
 	if( List == none )
 	{
-		`log("UIEffectListItem incoming 'List' is none.",,'uixcom');
+		//`log("UIEffectListItem incoming 'List' is none.",,'uixcom');
 		return self;
 	}
 

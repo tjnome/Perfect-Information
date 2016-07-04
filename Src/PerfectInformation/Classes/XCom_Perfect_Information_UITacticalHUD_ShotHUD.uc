@@ -1,6 +1,6 @@
 //-----------------------------------------------------------
 //	Class:	XCom_Perfect_Information_UITacticalHUD_ShotHUD
-//	Author: tjnome, morionicidiot
+//	Author: tjnome, GrimyBunyip
 //	
 //-----------------------------------------------------------
 
@@ -42,39 +42,67 @@ simulated function Update()
     TacticalHUD = UITacticalHUD(Screen);
  
     // Remove the shotbar box when you aren't looking at it
-    if ( GrimyBox1 != none )
-    {
-        GrimyBox1.Remove();
+    if ( GrimyBox1 == none ) {
+		GrimyBox1 = Spawn(class'UIBGBox', self);
+		GrimyBox1.InitBG('GrimyBox1').SetBGColor("gray");
+		GrimyBox1.SetColor(HIT_HEX_COLOR);
+		GrimyBox1.SetHighlighed(true);
+		GrimyBox1.AnchorBottomCenter();
+		GrimyBox1.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyBox2 != none )
-    {
-        GrimyBox2.Remove();
+    if ( GrimyBox2 == none ) {
+        GrimyBox2 = Spawn(class'UIBGBox', self);
+        GrimyBox2.InitBG('GrimyBox2').SetBGColor("gray");
+        GrimyBox2.SetColor(CRIT_HEX_COLOR);
+        GrimyBox2.SetHighlighed(true);
+        GrimyBox2.AnchorBottomCenter();
+        GrimyBox2.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyBox3 != none )
-    {
-        GrimyBox3.Remove();
+    if ( GrimyBox3 == none ) {
+		GrimyBox3 = Spawn(class'UIBGBox', self);
+        GrimyBox3.InitBG('GrimyBox3').SetBGColor("gray");
+        GrimyBox3.SetColor(DODGE_HEX_COLOR);
+        GrimyBox3.SetHighlighed(true);
+        GrimyBox3.AnchorBottomCenter();
+        GrimyBox3.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyBox4 != none )
-    {
-        GrimyBox4.Remove();
+    if ( GrimyBox4 == none ) {
+        GrimyBox4 = Spawn(class'UIBGBox', self);
+        GrimyBox4.InitBG('GrimyBox4').SetBGColor("gray");
+        GrimyBox4.SetColor(MISS_HEX_COLOR);
+        GrimyBox4.SetHighlighed(true);
+        GrimyBox4.AnchorBottomCenter();
+        GrimyBox4.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyTextDodge != none )
-    {
-        GrimyTextDodge.Remove();
+    if ( GrimyTextDodge == none ) {
+        GrimyTextDodge = Spawn(class'UIText', self);
+        GrimyTextDodge.InitText('GrimyText1');
+        GrimyTextDodge.AnchorBottomCenter();
     }
-    if ( GrimyTextDodgeHeader != none )
-    {
-        GrimyTextDodgeHeader.Remove();
+    if ( GrimyTextDodgeHeader == none ) {
+		GrimyTextDodgeHeader = Spawn(class'UIText', self);
+		GrimyTextDodgeHeader.InitText('GrimyText2');
+		GrimyTextDodgeHeader.AnchorBottomCenter();
     }
-    if ( GrimyTextCrit != none )
-    {
-        GrimyTextCrit.Remove();
+    if ( GrimyTextCrit == none ) {
+        GrimyTextCrit = Spawn(class'UIText', self);
+        GrimyTextCrit.InitText('GrimyText3');
+        GrimyTextCrit.AnchorBottomCenter();
     }
-    if ( GrimyTextCritHeader != none )
-    {
-        GrimyTextCritHeader.Remove();
+    if ( GrimyTextCritHeader == none ) {
+        GrimyTextCritHeader = Spawn(class'UIText', self);
+        GrimyTextCritHeader.InitText('GrimyText4');
+        GrimyTextCritHeader.AnchorBottomCenter();
     }
- 
+	GrimyBox1.Hide();
+	GrimyBox2.Hide();
+	GrimyBox3.Hide();
+	GrimyBox4.Hide();
+	GrimyTextDodge.Hide();
+	GrimyTextDodgeheader.Hide();
+	GrimyTextCrit.Hide();
+	GrimyTextCritHeader.Hide();
+	 
     SelectedUIAction = TacticalHUD.GetSelectedAction();
     if (SelectedUIAction.AbilityObjectRef.ObjectID > 0) //If we do not have a valid action selected, ignore this update request
     {
@@ -195,7 +223,7 @@ simulated function Update()
                 {
                     GrimyDodgeChance = clamp(GrimyDodgeChance - (GrimyHitChance - 100),0,100);
                 }
-                GrimyCritChance = clamp(GrimyCritChance,0,100-GrimyDodgeChance);
+                GrimyCritChance = clamp(GrimyCritChance,0,GrimyHitChance-GrimyDodgeChance);
                
                 // Generate a display for dodge chance
                 if ( default.SHOW_DODGE && GrimyDodgeChance > 0 )
@@ -204,31 +232,26 @@ simulated function Update()
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,28);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Normal);
                     FontString = class'UIUtilities_Text'.static.AddFontInfo(FontString,false,true);
-                    GrimyTextDodge = Spawn(class'UIText', self);
-                    GrimyTextDodge.InitText('GrimyText1',FontString);
-                    GrimyTextDodge.AnchorBottomCenter();
                     GrimyTextDodge.SetPosition(default.DODGE_OFFSET_X,default.DODGE_OFFSET_Y);
+					GrimyTextDodge.SetText(FontString);
+					GrimyTextDodge.Show();
  
                     FontString = "DODGE";
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,19);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Header);
-                    GrimyTextDodgeHeader = Spawn(class'UIText', self);
-                    GrimyTextDodgeHeader.InitText('GrimyText2',FontString);
-                    GrimyTextDodgeHeader.AnchorBottomCenter();
-                    GrimyTextDodgeheader.SetPosition(default.DODGE_OFFSET_X,default.DODGE_OFFSET_Y-22);
+                    GrimyTextDodgeHeader.SetPosition(default.DODGE_OFFSET_X,default.DODGE_OFFSET_Y-22);
+					GrimyTextDodgeHeader.SetText(FontString);
+					GrimyTextDodgeHeader.Show();
                 }
  
                 // Generate a display for Crit Damage
-                GrimyCritDmg = GetCritDamage(SelectedAbilityState);
+                GrimyCritDmg = GetCritDamage(SelectedAbilityState, Target);
                 if ( default.SHOW_CRIT_DMG && GrimyCritDmg > 0 )
                 {
                     FontString = "+" $ string(GrimyCritDmg);
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,28);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Normal);
                     FontString = class'UIUtilities_Text'.static.AddFontInfo(FontString,false,true);
-                    GrimyTextCrit = Spawn(class'UIText', self);
-                    GrimyTextCrit.InitText('GrimyText3',FontString);
-                    GrimyTextCrit.AnchorBottomCenter();
                     if ( GrimyCritDmg > 9 ) //If the string is too long, shift it left by 15 pixels (~1 digit)
                     {
                         GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y);
@@ -237,14 +260,15 @@ simulated function Update()
                     {
                         GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X+15,default.CRIT_OFFSET_Y);
                     }
+					GrimyTextCrit.SetText(FontString);
+					GrimyTextCrit.Show();
  
                     FontString = "C.DMG";
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,19);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Header);
-                    GrimyTextCritHeader = Spawn(class'UIText', self);
-                    GrimyTextCritHeader.InitText('GrimyText4',FontString);
-                    GrimyTextCritHeader.AnchorBottomCenter();
-                    GrimyTextCritheader.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y-22);
+                    GrimyTextCritHeader.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y-22);
+					GrimyTextCritHeader.SetText(FontString);
+					GrimyTextCritHeader.Show();
                 }
  
                 GrimyHitWidth = default.BAR_WIDTH_MULT * ( clamp( GrimyHitChance, 0, 100 ) - GrimyCritChance - GrimyDodgeChance );
@@ -253,68 +277,39 @@ simulated function Update()
                 GrimyMissWidth = default.BAR_WIDTH_MULT * ( 100 - HitChance);
                
                 // Generate the shot breakdown bar
-                if ( default.BAR_HEIGHT > 0 )
-                {
-                    if ( GrimyHitWidth > 0 )
-                    {
-                        GrimyBox1 = Spawn(class'UIBGBox', self);
-                        GrimyBox1.InitBG('GrimyBox1').SetBGColor("gray");
-                        GrimyBox1.SetColor(HIT_HEX_COLOR);
-                        GrimyBox1.SetHighlighed(true);
-                        GrimyBox1.AnchorBottomCenter();
-                        GrimyBox1.SetAlpha(default.BAR_ALPHA);
-                        if ( default.AIM_LEFT_OF_CRIT )
-                        {
+                if ( default.BAR_HEIGHT > 0 ) {
+                    if ( GrimyHitWidth > 0 ) {
+                        if ( default.AIM_LEFT_OF_CRIT ) {
                             GrimyBox1.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
                         }
-                        else
-                        {
+                        else {
                             GrimyBox1.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyCritWidth,default.BAR_OFFSET_Y);
                         }
                         GrimyBox1.SetSize(GrimyHitWidth,default.BAR_HEIGHT);
+						GrimyBox1.Show();
                     }
  
-                    if ( GrimyCritWidth > 0 )
-                    {
-                        GrimyBox2 = Spawn(class'UIBGBox', self);
-                        GrimyBox2.InitBG('GrimyBox2').SetBGColor("gray");
-                        GrimyBox2.SetColor(CRIT_HEX_COLOR);
-                        GrimyBox2.SetHighlighed(true);
-                        GrimyBox2.AnchorBottomCenter();
-                        GrimyBox2.SetAlpha(default.BAR_ALPHA);
-                        if ( default.AIM_LEFT_OF_CRIT )
-                        {
+                    if ( GrimyCritWidth > 0 ) {
+                        if ( default.AIM_LEFT_OF_CRIT ) {
                             GrimyBox2.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth,default.BAR_OFFSET_Y);
                         }
-                        else
-                        {
+                        else {
                             GrimyBox2.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
                         }
                         GrimyBox2.SetSize(GrimyCritWidth,default.BAR_HEIGHT);
+						GrimyBox2.Show();
                     }
  
-                    if ( GrimyDodgeWidth > 0 )
-                    {
-                        GrimyBox3 = Spawn(class'UIBGBox', self);
-                        GrimyBox3.InitBG('GrimyBox3').SetBGColor("gray");
-                        GrimyBox3.SetColor(DODGE_HEX_COLOR);
-                        GrimyBox3.SetHighlighed(true);
-                        GrimyBox3.AnchorBottomCenter();
-                        GrimyBox3.SetAlpha(default.BAR_ALPHA);
+                    if ( GrimyDodgeWidth > 0 ) {
                         GrimyBox3.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth,default.BAR_OFFSET_Y);
                         GrimyBox3.SetSize(GrimyDodgeWidth,default.BAR_HEIGHT);
+                        GrimyBox3.Show();
                     }
  
-                    if ( GrimyMissWidth > 0 && GrimyMissWidth < 500 )
-                    {
-                        GrimyBox4 = Spawn(class'UIBGBox', self);
-                        GrimyBox4.InitBG('GrimyBox4').SetBGColor("gray");
-                        GrimyBox4.SetColor(MISS_HEX_COLOR);
-                        GrimyBox4.SetHighlighed(true);
-                        GrimyBox4.AnchorBottomCenter();
-                        GrimyBox4.SetAlpha(default.BAR_ALPHA);
+                    if ( GrimyMissWidth > 0 && GrimyMissWidth < 500 ) {
                         GrimyBox4.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth + GrimyDodgeWidth,default.BAR_OFFSET_Y);
                         GrimyBox4.SetSize(GrimyMissWidth,default.BAR_HEIGHT);
+						GrimyBox4.Show();
                     }
                 }
  
@@ -373,9 +368,42 @@ simulated function Update()
  
 // GRIMY - Added this function to calculate crit damage from a weapon.
 // It doesn't scan for abilities and ammo types though, those are unfortunately often stored in if conditions
-static function int GetCritDamage(XcomGameState_Ability AbilityState)
+static function int GetCritDamage(XcomGameState_Ability AbilityState, StateObjectReference TargetRef)
 {
-    return X2WeaponTemplate(XComGameState_Item(`XCOMHISTORY.GetGameStateForObjectID(AbilityState.SourceWeapon.ObjectID)).GetMyTemplate()).BaseDamage.Crit;
+	local XComGameStateHistory History;
+	local XComGameState_Unit SourceUnit, TargetUnit;
+	local StateObjectReference EffectRef;
+	local XComGameState_Effect EffectState;
+	local XComGameState_Item ItemState;
+	local X2Effect_Persistent EffectTemplate;
+	local EffectAppliedData TestEffectParams;
+	local int CritDamage;
+	local WeaponDamageValue WeaponDamage;
+	
+	History = `XCOMHISTORY;
+	SourceUnit = XComGameState_Unit(History.GetGameStateForObjectID(AbilityState.OwnerStateObject.ObjectID));
+	TargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetRef.ObjectID));
+
+	TestEffectParams.AbilityInputContext.AbilityRef = AbilityState.GetReference();
+	TestEffectParams.AbilityInputContext.AbilityTemplateName = AbilityState.GetMyTemplateName();
+	TestEffectParams.ItemStateObjectRef = AbilityState.SourceWeapon;
+	TestEffectParams.AbilityStateObjectRef = AbilityState.GetReference();
+	TestEffectParams.SourceStateObjectRef = SourceUnit.GetReference();
+	TestEffectParams.PlayerStateObjectRef = SourceUnit.ControllingPlayer;
+	TestEffectParams.TargetStateObjectRef = TargetRef;
+	TestEffectParams.AbilityResultContext.HitResult = eHit_Crit;
+
+	ItemState = AbilityState.GetSourceWeapon();
+	ItemState.GetBaseWeaponDamageValue(ItemState, WeaponDamage);
+	CritDamage = WeaponDamage.Crit;
+	foreach SourceUnit.AffectedByEffects(EffectRef)
+	{
+		EffectState = XComGameState_Effect(History.GetGameStateForObjectID(EffectRef.ObjectID));
+		EffectTemplate = EffectState.GetX2Effect();
+
+		CritDamage += EffectTemplate.GetAttackingDamageModifier(EffectState, SourceUnit, Damageable(TargetUnit), AbilityState, TestEffectParams, WeaponDamage.Damage);
+	}
+    return CritDamage;
 }
  
 // GRIMY - Added this to do a minimum damage preview.

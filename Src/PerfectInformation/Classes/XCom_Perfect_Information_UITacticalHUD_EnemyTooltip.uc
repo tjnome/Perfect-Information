@@ -11,6 +11,9 @@ var int StatsWidth;
 //var private UIAbilityList AbilityList;
 var public UIMask BodyMask;
 
+var localized string PrimaryBase, PrimarySpread, PrimaryPlusOne;
+
+
 simulated function UIPanel InitEnemyStats(optional name InitName, optional name InitLibID)
 {
 	InitPanel(InitName, InitLibID);
@@ -39,7 +42,7 @@ simulated function UIPanel InitEnemyStats(optional name InitName, optional name 
 	StatList.InitStatList('StatList',, PADDING_LEFT, PADDING_TOP + 36, BodyArea.width-PADDING_RIGHT, BodyArea.height-PADDING_BOTTOM, class'UIStatList'.default.PADDING_LEFT, class'UIStatList'.default.PADDING_RIGHT/2);
 
 	BodyMask = Spawn(class'UIMask', BodyArea).InitMask('Mask', StatList).FitMask(StatList);
-	
+
 	//Re-enabling EnemyToolTip
 	return self; 
 }
@@ -110,6 +113,18 @@ simulated function array<UISummary_ItemStat> GetEnemyStats( XComGameState_Unit k
 	//Hack!
 
 	Title.SetHTMLText( class'UIUtilities_Text'.static.StyleText(Summary.UnitName, eUITextStyle_Tooltip_Title) );
+
+	Item.Label = default.PrimaryBase;
+	Item.Value = string(X2WeaponTemplate(kGameStateUnit.GetPrimaryWeapon().GetMyTemplate()).BaseDamage.Damage);
+	Stats.AddItem(Item); 
+
+	Item.Label = default.PrimarySpread;
+	Item.Value = string(X2WeaponTemplate(kGameStateUnit.GetPrimaryWeapon().GetMyTemplate()).BaseDamage.Spread);
+	Stats.AddItem(Item); 
+
+	Item.Label = default.PrimaryPlusOne;
+	Item.Value = string(X2WeaponTemplate(kGameStateUnit.GetPrimaryWeapon().GetMyTemplate()).BaseDamage.PlusOne);
+	Stats.AddItem(Item);
 
 	Item.Label = class'XLocalizedData'.default.HealthLabel;
 	Item.Value = class'UIUtilities_Colors'.static.ColorString(Summary.CurrentHP $"/" $Summary.MaxHP, ColorHP(Summary.CurrentHP, Summary.MaxHP)); 
@@ -217,7 +232,7 @@ defaultproperties
 	StatsWidth = 255;
 	width = 350;
 	height = 500; 
-	StatsHeight = 315;
+	StatsHeight = 390;
 	AbilitiesHeight = 300; 
 	PaddingBetweenBoxes = 10;
 	PaddingForAbilityList = 4;
@@ -226,5 +241,4 @@ defaultproperties
 	PADDING_RIGHT	= 0;
 	PADDING_TOP		= 10;
 	PADDING_BOTTOM	= 10;
-
 }
