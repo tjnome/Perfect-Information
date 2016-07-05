@@ -1,7 +1,7 @@
 class XCom_Perfect_Information_MCMListener extends UIScreenListener config(PerfectInformation_NullConfig);
 
-`include(MissionTimers/Src/ModConfigMenuAPI/MCM_API_Includes.uci)
-`include(MissionTimers/Src/ModConfigMenuAPI/MCM_API_CfgHelpers.uci)
+`include(PerfectInformation/Src/ModConfigMenuAPI/MCM_API_Includes.uci)
+`include(PerfectInformation/Src/ModConfigMenuAPI/MCM_API_CfgHelpers.uci)
 
 var config bool CFG_CLICKED, SETTINGS_CHANGED;
 var config int CONFIG_VERSION;

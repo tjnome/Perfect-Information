@@ -1,3 +1,4 @@
+//-----------------------------------------------------------
 //	Class:	XCom_Perfect_Information_XComUnitPawnNativeBase
 //	Author: morionicidiot
 //	
