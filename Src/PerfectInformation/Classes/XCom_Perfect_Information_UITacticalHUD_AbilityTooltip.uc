@@ -183,7 +183,9 @@ simulated function UISummary_Ability GetSummaryAbility(XComGameState_Ability kGa
 
 	//TODO: @gameplay fill in somma dat data. 
 	// Since this was never done. I'm doing it! -tjnome!
-	AbilityData.CooldownTime = kGameStateAbility.GetMyTemplate().AbilityCooldown.iNumTurns; // Cooldown from AbilityCooldown
+	AbilityData.CooldownTime = 0;
+	if (kGameStateAbility.GetMyTemplate().AbilityCooldown != none)
+		AbilityData.CooldownTime = kGameStateAbility.GetMyTemplate().AbilityCooldown.iNumTurns; // Cooldown from AbilityCooldown
 	
 	//AbilityData.ActionCost = kGameStateAbility.GetMyTemplate().AbilityCosts.Length; // Ability Cost
 	AbilityData.ActionCost = 0;

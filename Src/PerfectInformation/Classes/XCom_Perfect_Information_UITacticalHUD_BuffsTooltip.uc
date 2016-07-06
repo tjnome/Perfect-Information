@@ -175,8 +175,7 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 
 	return List; 
 }
-
-function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
+simulated function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
 {
 	local X2AbilityTag AbilityTag;
 
@@ -186,36 +185,25 @@ function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameS
 	if (bSource)
 	{
 		Summary.Name = Persist.SourceFriendlyName;
-		Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription);
+		Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription $ "\n" $ CooldownDescription(EffectState, Persist));
+		//Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription);
 		Summary.Icon = Persist.SourceIconLabel;
-		//`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
-		//`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
-		//`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
-		//`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
 
 		if (Persist.bInfiniteDuration)
 			Summary.Cooldown = 0;
 		else
 			Summary.Cooldown = EffectState.iTurnsRemaining;
 
-		//Summary.Cooldown = 0; //TODO @jbouscher @bsteiner
 		Summary.Charges = 0; //TODO @jbouscher @bsteiner
 		Summary.AbilitySourceName = Persist.AbilitySourceName;
 	}
 	else
 	{
 		Summary.Name = Persist.FriendlyName;
-		Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription);
+		Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription $ "\n" $ CooldownDescription(EffectState, Persist));
+		//Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription);
 		Summary.Icon = Persist.IconImage;
-		//`log("EffectState.iTurnsRemaining: " $ EffectState.GetX2Effect().iNumTurns $ " =======");
-		//`log("EffectState.bInfiniteDuration: " $ EffectState.GetX2Effect().bInfiniteDuration $ " =======");
-		//`log("Persist.WatchRule: " $ EffectState.GetX2Effect().WatchRule $ " =======");
-		//`log("Persist.bIgnorePlayerCheckOnTick: " $ EffectState.GetX2Effect().bIgnorePlayerCheckOnTick $ " =======");
-		//`log("kGameStateUnit.StunnedThisTurn: " $ kGameStateUnit.StunnedThisTurn $ " =======");
-		//`log("kGameStateUnit.StunnedActionPoints: " $ kGameStateUnit.StunnedActionPoints $ " =======");
-		//`log("kGameStateUnit.ActionPoints.Length: " $ kGameStateUnit.ActionPoints.Length $ " =======");
 
-		Summary.Cooldown = 0;
 		if (Persist.bInfiniteDuration) 
 		{
 			if (kGameStateUnit.StunnedActionPoints > 0)
@@ -226,7 +214,6 @@ function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameS
 		else
 			Summary.Cooldown = EffectState.iTurnsRemaining;
 
-		//Summary.Cooldown = 0; //TODO @jbouscher @bsteiner
 		Summary.Charges = 0; //TODO @jbouscher @bsteiner
 		Summary.AbilitySourceName = Persist.AbilitySourceName;
 	}
@@ -234,35 +221,60 @@ function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameS
 	AbilityTag.ParseObj = None;
 }
 
-function array<string> FixDamageDescription(const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, X2AbilityTag AbilityTag)
+simulated function string CooldownDescription (const XComGameState_Effect EffectState, const X2Effect_Persistent Persist) 
 {
-	/*
-	local X2AbilityTemplate Template;
-	local name Type;
-	local int MaxDamage, MinDamage;
+	local XComGameState_Player PlayerState;
 
-	Template = kGameStateAbility.GetMyTemplate();
-	Type = Template.Name(InString);
+	// Adds information if the effect is Persistent of not
+	if (Persist.bInfiniteDuration)
+		return "Persistent effect";
 
-	//Switch to case if many more
-	if (Type == 'BURNDAMAGE')
-	{
-		AbilityTag.ex
-	}
-	*/	
+	// Add information if the turn counter ticks on alien and players turn. 
+	//Should probably 2x turns to get a real counter in this case
+	if (Persist.bIgnorePlayerCheckOnTick)
+		return "Effect ticks on alien and players turn";
+
+	if (Persist.WatchRule == eGameRule_UseActionPoint)
+		return "Effect removed after action";
+	
+	PlayerState = XComGameState_Player(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.PlayerStateObjectRef.ObjectID));
+	return (WatchRule(Persist) @ GetTeam(PlayerState) @ "turn");
+	
 }
 
-// This should give me only numbers.
-static final function array<string> GetNumber(string s)
+// Get information if it ends on aliens or players turn.
+static final function string GetTeam(const XComGameState_Player PlayerState)
 {
-	local array<string> numbers;
-	local int i, c;
-
-	for (i = 0; i < Len(s); i++) {
-		c = Asc(Right(s, Len(s) - i));
-		if ( c == Clamp(c, 48, 57) ) // 0-9
-			numbers.AddItem(Chr(c));
+	switch (PlayerState.GetTeam())
+	{
+		case eTeam_XCom:
+			return "Player's";
+			break;
+		case eTeam_Alien:
+			return "Aliens";
+			break;
+		case eTeam_Neutral:
+			return "Civilians";
+			break;
+		default:
+			return "Player's";
+			break;
 	}
+}
 
-	return numbers;
+// Get information from WatchRule if the effects on on start/after action/after turn ended.
+static final function string WatchRule(const X2Effect_Persistent Persist)
+{
+	switch (Persist.WatchRule)
+	{
+		case eGameRule_PlayerTurnBegin:
+			return "Ends on the start of";
+			break;
+		case eGameRule_PlayerTurnEnd:
+			return "Ends on the end of";
+			break;
+		default:
+			return "Ends on the start of";
+			break;
+	}
 }

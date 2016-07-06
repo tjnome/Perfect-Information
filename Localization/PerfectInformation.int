@@ -68,3 +68,6 @@ FLANKING_CRIT_LABEL = "Flanking Crit";
 PrimaryBase = "Damage Base"
 PrimarySpread = "Damage Spread"
 PrimaryPlusOne = "Damage +1"
+
+[XCom_Perfect_Information_UIEffectListItem]
+TURNS_REMAINING = "TURNS REMAINING"

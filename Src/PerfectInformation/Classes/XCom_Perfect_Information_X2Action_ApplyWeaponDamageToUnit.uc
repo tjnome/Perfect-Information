@@ -298,6 +298,10 @@ function string GetChance()
 		calcHitChance = GetModifiedHitChance(XComGameState_Player(History.GetGameStateForObjectID(ShooterState.GetAssociatedPlayerID(),,OldHistoryIndex)), calcHitChance);
 	}
 
+	// The hit chance should not exceed 100%
+	if (calcHitChance > 100)
+		calcHitChance = 100;
+
 	// Outputs whatever the value is now (Hit with or without Assist). 
 	if (getSHOW_HIT_CHANCE_FLYOVERS() && !getSHOW_MISS_CHANCE_FLYOVERS())
 	{
@@ -336,17 +340,17 @@ function int GetModifiedHitChance(XComGameState_Player Shooter, int BaseHitChanc
 	
 	StandardAim = X2AbilityToHitCalc_StandardAim(AbilityTemplate.AbilityToHitCalc);
 	
-	if ( StandardAim == none )
+	if (StandardAim == none)
 		return BaseHitChance;
 	else
 		ModifiedChance = StandardAim.GetModifiedHitChanceForCurrentDifficulty(Shooter, BaseHitChance);
 
-	if ( Shooter.TeamFlag == eTeam_XCom ) {
-		if ( ModifiedChance < BaseHitChance )
+	if (Shooter.TeamFlag == eTeam_XCom) {
+		if (ModifiedChance < BaseHitChance)
 			ModifiedChance = BaseHitChance;
 	}
-	else if ( Shooter.TeamFlag == eTeam_Alien ) {
-		if ( ModifiedChance > BaseHitChance )
+	else if (Shooter.TeamFlag == eTeam_Alien) {
+		if (ModifiedChance > BaseHitChance)
 			ModifiedChance = BaseHitChance;
 	}
 

@@ -24,6 +24,16 @@ simulated function InitializeTooltipData()
 
 	EnemyStats = new class'UITooltipGroup_Stacking';
 
+	// Should remove all of the original path.
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget(string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kInventory.m_kWeapon.MCPath)); 
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget(string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kStatsContainer.MCPath));
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget(string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kEnemyTargets.MCPath));
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget(string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kPerks.MCPath));
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget(string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kEnemyTargets.MCPath));
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget((UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kStatsContainer.MCPath $ "." $ class'UITacticalHUD_BuffsTooltip'.default.m_strBonusMC)); 
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget((UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kStatsContainer.MCPath $ "." $ class'UITacticalHUD_BuffsTooltip'.default.m_strPenaltyMC));
+	Movie.Pres.m_kTooltipMgr.RemoveTooltipByTarget(string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kAbilityHUD.MCPath));
+
 	// Weapon tooltip ---------------------------------------------------------------------
 	WeaponTooltip = Spawn(class'UITacticalHUD_WeaponTooltip', Movie.Pres.m_kTooltipMgr); 
 	WeaponTooltip.InitWeaponStats('TooltipWeaponStats');
@@ -38,9 +48,9 @@ simulated function InitializeTooltipData()
 	WeaponTooltip.SetPosition(-20, -150);
 	WeaponTooltip.bFollowMouse = false;
 
-	WeaponTooltip.targetPath = string( UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kInventory.m_kWeapon.MCPath); 
+	WeaponTooltip.targetPath = string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kInventory.m_kWeapon.MCPath); 
 
-	WeaponTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip( WeaponTooltip );
+	WeaponTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip(WeaponTooltip);
 
 	// Unit Stats tooltip ------------------------------------------------------------------
 	SoldierInfoTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_SoldierInfoTooltip', Movie.Pres.m_kTooltipMgr); 
@@ -50,9 +60,9 @@ simulated function InitializeTooltipData()
 	SoldierInfoTooltip.SetPosition(20 , -180 - SoldierInfoTooltip.height);
 	SoldierInfoTooltip.bFollowMouse = false;
 
-	SoldierInfoTooltip.targetPath = string( UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kStatsContainer.MCPath);
+	SoldierInfoTooltip.targetPath = string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kStatsContainer.MCPath);
 
-	SoldierInfoTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip( SoldierInfoTooltip );
+	SoldierInfoTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip(SoldierInfoTooltip);
 
 	// Hacking  Stats tooltip **DEPRECATED** -----------------------------------------------
 	/*
@@ -69,17 +79,20 @@ simulated function InitializeTooltipData()
 
 	// Enemy Stats tooltip ------------------------------------------------------------------
 	// dburchanowski - Oct 16, 2015: Disabling, but leaving here in case Jake wants it back before we ship
-	EnemyTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_EnemyTooltip', Movie.Pres.m_kTooltipMgr); 
-	EnemyTooltip.InitEnemyStats('TooltipEnemyStats');
+	If (SHOW_ENEMY_STATS_TOOLTIP)
+	{
+		EnemyTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_EnemyTooltip', Movie.Pres.m_kTooltipMgr); 
+		EnemyTooltip.InitEnemyStats('TooltipEnemyStats');
 
-	EnemyTooltip.SetAnchor(class'UIUtilities'.const.ANCHOR_TOP_RIGHT);
-	EnemyTooltip.SetPosition(-265, 55);
-	EnemyTooltip.bFollowMouse = false;
+		EnemyTooltip.SetAnchor(class'UIUtilities'.const.ANCHOR_TOP_RIGHT);
+		EnemyTooltip.SetPosition(-265, 55);
+		EnemyTooltip.bFollowMouse = false;
 
-	EnemyTooltip.targetPath = string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kEnemyTargets.MCPath);
-	EnemyTooltip.bUsePartialPath = true; 
+		EnemyTooltip.targetPath = string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kEnemyTargets.MCPath);
+		EnemyTooltip.bUsePartialPath = true; 
 
-	EnemyTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip( EnemyTooltip );
+		EnemyTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip(EnemyTooltip);
+	}
 
 	// Soldier Passives tooltip ------------------------------------------------------------------
 	PerkTooltip = Spawn(class'UITacticalHUD_PerkTooltip', Movie.Pres.m_kTooltipMgr); 
@@ -95,16 +108,13 @@ simulated function InitializeTooltipData()
 	PerkTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip( PerkTooltip );
 
 	// Enemy Bonuses tooltip ------------------------------------------------------------------
-	If (SHOW_ENEMY_STATS_TOOLTIP)
-	{
-		EnemyBonusesTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_BuffsTooltip', Movie.Pres.m_kTooltipMgr); 
-		EnemyBonusesTooltip.InitBonusesAndPenalties('TooltipEnemyBonuses',,true, false, Movie.m_v2ScaledDimension.X - 160, Movie.m_v2ScaledDimension.Y - 400, true);
+	EnemyBonusesTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_BuffsTooltip', Movie.Pres.m_kTooltipMgr); 
+	EnemyBonusesTooltip.InitBonusesAndPenalties('TooltipEnemyBonuses',,true, false, Movie.m_v2ScaledDimension.X - 160, Movie.m_v2ScaledDimension.Y - 400, true);
 
-		EnemyBonusesTooltip.targetPath =  string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kEnemyTargets.MCPath); 
-		EnemyBonusesTooltip.bUsePartialPath = true; 
+	EnemyBonusesTooltip.targetPath =  string(UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kEnemyTargets.MCPath); 
+	EnemyBonusesTooltip.bUsePartialPath = true; 
 
-		EnemyBonusesTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip( EnemyBonusesTooltip );
-	}
+	EnemyBonusesTooltip.ID = Movie.Pres.m_kTooltipMgr.AddPreformedTooltip(EnemyBonusesTooltip );
 	
 	// Enemy Penalties tooltip ------------------------------------------------------------------
 	EnemyPenaltiesTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_BuffsTooltip', Movie.Pres.m_kTooltipMgr); 
@@ -151,4 +161,5 @@ simulated function InitializeTooltipData()
 	EnemyStats.AddWithRestingYPosition(EnemyBonusesTooltip, EnemyBonusesTooltip.Y);
 	if (EnemyTooltip != none)
 		EnemyStats.AddWithRestingYPosition(EnemyTooltip, EnemyTooltip.Y);
+
 }
