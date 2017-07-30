@@ -6,18 +6,13 @@
 
 class XCom_Perfect_Information_UITacticalHUD_ShotHUD extends UITacticalHUD_ShotHUD config(PerfectInformation);
  
-var config bool SHOW_AIM_ASSIST_MAIN_HUD;
-var config bool SHOW_MISS_CHANCE_MAIN_HUD;
- 
 var UIBGBox GrimyBox1, GrimyBox2, GrimyBox3, GrimyBox4;
 var UIText GrimyTextDodge, GrimyTextDodgeHeader, GrimyTextCrit, GrimyTextCritHeader;
 var config int BAR_HEIGHT, BAR_OFFSET_X, BAR_OFFSET_Y, BAR_ALPHA, BAR_WIDTH_MULT;
 var config int DODGE_OFFSET_X, DODGE_OFFSET_Y, CRIT_OFFSET_X, CRIT_OFFSET_Y;
 var config string HIT_HEX_COLOR, CRIT_HEX_COLOR, DODGE_HEX_COLOR, MISS_HEX_COLOR;
-var config bool PREVIEW_MINIMUM, AIM_LEFT_OF_CRIT, SHOW_DODGE, SHOW_CRIT_DMG, PREVIEW_HACKING;
  
-simulated function Update()
-{
+simulated function Update() {
     local bool isValidShot;
     local string ShotName, ShotDescription, ShotDamage;
     local int HitChance, CritChance, TargetIndex, MinDamage, MaxDamage, AllowsShield;
@@ -42,7 +37,7 @@ simulated function Update()
     TacticalHUD = UITacticalHUD(Screen);
  
     // Remove the shotbar box when you aren't looking at it
-    if ( GrimyBox1 == none ) {
+    if (GrimyBox1 == none) {
 		GrimyBox1 = Spawn(class'UIBGBox', self);
 		GrimyBox1.InitBG('GrimyBox1').SetBGColor("gray");
 		GrimyBox1.SetColor(HIT_HEX_COLOR);
@@ -50,7 +45,7 @@ simulated function Update()
 		GrimyBox1.AnchorBottomCenter();
 		GrimyBox1.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyBox2 == none ) {
+    if (GrimyBox2 == none) {
         GrimyBox2 = Spawn(class'UIBGBox', self);
         GrimyBox2.InitBG('GrimyBox2').SetBGColor("gray");
         GrimyBox2.SetColor(CRIT_HEX_COLOR);
@@ -58,7 +53,7 @@ simulated function Update()
         GrimyBox2.AnchorBottomCenter();
         GrimyBox2.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyBox3 == none ) {
+    if (GrimyBox3 == none) {
 		GrimyBox3 = Spawn(class'UIBGBox', self);
         GrimyBox3.InitBG('GrimyBox3').SetBGColor("gray");
         GrimyBox3.SetColor(DODGE_HEX_COLOR);
@@ -66,7 +61,7 @@ simulated function Update()
         GrimyBox3.AnchorBottomCenter();
         GrimyBox3.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyBox4 == none ) {
+    if (GrimyBox4 == none) {
         GrimyBox4 = Spawn(class'UIBGBox', self);
         GrimyBox4.InitBG('GrimyBox4').SetBGColor("gray");
         GrimyBox4.SetColor(MISS_HEX_COLOR);
@@ -74,22 +69,22 @@ simulated function Update()
         GrimyBox4.AnchorBottomCenter();
         GrimyBox4.SetAlpha(default.BAR_ALPHA);
     }
-    if ( GrimyTextDodge == none ) {
+    if (GrimyTextDodge == none) {
         GrimyTextDodge = Spawn(class'UIText', self);
         GrimyTextDodge.InitText('GrimyText1');
         GrimyTextDodge.AnchorBottomCenter();
     }
-    if ( GrimyTextDodgeHeader == none ) {
+    if (GrimyTextDodgeHeader == none) {
 		GrimyTextDodgeHeader = Spawn(class'UIText', self);
 		GrimyTextDodgeHeader.InitText('GrimyText2');
 		GrimyTextDodgeHeader.AnchorBottomCenter();
     }
-    if ( GrimyTextCrit == none ) {
+    if (GrimyTextCrit == none) {
         GrimyTextCrit = Spawn(class'UIText', self);
         GrimyTextCrit.InitText('GrimyText3');
         GrimyTextCrit.AnchorBottomCenter();
     }
-    if ( GrimyTextCritHeader == none ) {
+    if (GrimyTextCritHeader == none) {
         GrimyTextCritHeader = Spawn(class'UIText', self);
         GrimyTextCritHeader.InitText('GrimyText4');
         GrimyTextCritHeader.AnchorBottomCenter();
@@ -104,14 +99,12 @@ simulated function Update()
 	GrimyTextCritHeader.Hide();
 	 
     SelectedUIAction = TacticalHUD.GetSelectedAction();
-    if (SelectedUIAction.AbilityObjectRef.ObjectID > 0) //If we do not have a valid action selected, ignore this update request
-    {
+    if (SelectedUIAction.AbilityObjectRef.ObjectID > 0) { //If we do not have a valid action selected, ignore this update request
         SelectedAbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(SelectedUIAction.AbilityObjectRef.ObjectID));
         SelectedAbilityTemplate = SelectedAbilityState.GetMyTemplate();
         ActionUnit = XGUnit(`XCOMHISTORY.GetGameStateForObjectID(SelectedAbilityState.OwnerStateObject.ObjectID).GetVisualizer());
         TargetingMethod = TacticalHUD.GetTargetingMethod();
-        if( TargetingMethod != None )
-        {
+        if( TargetingMethod != None ) {
             TargetIndex = TargetingMethod.GetTargetIndex();
             if( SelectedUIAction.AvailableTargets.Length > 0 && TargetIndex < SelectedUIAction.AvailableTargets.Length )
                 kTarget = SelectedUIAction.AvailableTargets[TargetIndex];
@@ -119,18 +112,15 @@ simulated function Update()
  
         //Update L3 help and OK button based on ability.
         //*********************************************************************************
-        if (SelectedUIAction.bFreeAim)
-        {
+        if (SelectedUIAction.bFreeAim) {
             AS_SetButtonVisibility(Movie.IsMouseActive(), false);
             isValidShot = true;
         }
-        else if (SelectedUIAction.AvailableTargets.Length == 0 || SelectedUIAction.AvailableTargets[0].PrimaryTarget.ObjectID < 1)
-        {
+        else if (SelectedUIAction.AvailableTargets.Length == 0 || SelectedUIAction.AvailableTargets[0].PrimaryTarget.ObjectID < 1) {
             AS_SetButtonVisibility(Movie.IsMouseActive(), false);
             isValidShot = false;
         }
-        else
-        {
+        else {
             AS_SetButtonVisibility(Movie.IsMouseActive(), Movie.IsMouseActive());
             isValidShot = true;
         }
@@ -139,13 +129,11 @@ simulated function Update()
         //*********************************************************************************
         ShotName = SelectedAbilityState.GetMyFriendlyName();
  
-        if (SelectedUIAction.AvailableCode == 'AA_Success')
-        {
+        if (SelectedUIAction.AvailableCode == 'AA_Success') {
             ShotDescription = SelectedAbilityState.GetMyHelpText();
             if (ShotDescription == "") ShotDescription = "Missing 'LocHelpText' from ability template.";
         }
-        else
-        {
+        else {
             ShotDescription = class'X2AbilityTemplateManager'.static.GetDisplayStringForAvailabilityCode(SelectedUIAction.AvailableCode);
         }
  
@@ -165,21 +153,19 @@ simulated function Update()
  
         // In the rare case that this ability is self-targeting, but has a multi-target effect on units around it,
         // look at the damage preview, just not against the target (self).
-        if( SelectedAbilityTemplate.AbilityTargetStyle.IsA('X2AbilityTarget_Self')
+        if (SelectedAbilityTemplate.AbilityTargetStyle.IsA('X2AbilityTarget_Self')
            && SelectedAbilityTemplate.AbilityMultiTargetStyle != none
-           && SelectedAbilityTemplate.AbilityMultiTargetEffects.Length > 0 )
-        {
+           && SelectedAbilityTemplate.AbilityMultiTargetEffects.Length > 0 ) 
+		{
             SelectedAbilityState.GetDamagePreview(EmptyRef, MinDamageValue, MaxDamageValue, AllowsShield);
         }
-        else
-        {
+        else {
             SelectedAbilityState.GetDamagePreview(kTarget.PrimaryTarget, MinDamageValue, MaxDamageValue, AllowsShield);
         }
         MinDamage = MinDamageValue.Damage;
         MaxDamage = MaxDamageValue.Damage;
        
-        if (MinDamage > 0 && MaxDamage > 0)
-        {
+        if (MinDamage > 0 && MaxDamage > 0) {
             if (MinDamage == MaxDamage)
                 ShotDamage = String(MinDamage);
             else
@@ -191,8 +177,7 @@ simulated function Update()
         //Set up percent to hit / crit values
         //*********************************************************************************
        
-        if (SelectedAbilityTemplate.AbilityToHitCalc != none && SelectedAbilityState.iCooldown == 0)
-        {
+        if (SelectedAbilityTemplate.AbilityToHitCalc != none && SelectedAbilityState.iCooldown == 0) {
             Shooter = SelectedAbilityState.OwnerStateObject;
             Target = kTarget.PrimaryTarget;
  
@@ -200,34 +185,29 @@ simulated function Update()
             HitChance = Clamp(((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance), 0, 100);
             CritChance = kBreakdown.ResultTable[eHit_Crit];
            
-               
             GrimyHitChance = ((kBreakdown.bIsMultishot) ? kBreakdown.MultiShotHitChance : kBreakdown.FinalHitChance);
             GrimyCritChance = kBreakdown.ResultTable[eHit_Crit];
             GrimyDodgeChance = kBreakdown.ResultTable[eHit_Graze];
  
             //Check for standarshot
-            if (X2AbilityToHitCalc_StandardAim(SelectedAbilityState.GetMyTemplate().AbilityToHitCalc) != None && SHOW_AIM_ASSIST_MAIN_HUD)
-            {
+            if (X2AbilityToHitCalc_StandardAim(SelectedAbilityState.GetMyTemplate().AbilityToHitCalc) != None && GetTH_AIM_ASSIST()) {
                 HitChance += XCom_Perfect_Information_UITacticalHUD_ShotWings(UITacticalHUD(Screen).m_kShotInfoWings).GetModifiedHitChance(SelectedAbilityState, HitChance);
                 GrimyHitChance += XCom_Perfect_Information_UITacticalHUD_ShotWings(UITacticalHUD(Screen).m_kShotInfoWings).GetModifiedHitChance(SelectedAbilityState, HitChance);
             }          
  
             // Start of Grimy Shot Bar Code
  
-            if (HitChance > -1 && !kBreakdown.HideShotBreakdown)
-            {
-                if (SHOW_MISS_CHANCE_MAIN_HUD)
+            if (HitChance > -1 && !kBreakdown.HideShotBreakdown) {
+                if (GetTH_MISS_PERCENTAGE())
                     HitChance = 100 - HitChance;
  
-                if ( GrimyHitChance > 100 )
-                {
+                if (GrimyHitChance > 100) {
                     GrimyDodgeChance = clamp(GrimyDodgeChance - (GrimyHitChance - 100),0,100);
                 }
                 GrimyCritChance = clamp(GrimyCritChance,0,GrimyHitChance-GrimyDodgeChance);
                
                 // Generate a display for dodge chance
-                if ( default.SHOW_DODGE && GrimyDodgeChance > 0 )
-                {
+                if (GetTH_SHOW_GRAZED() && GrimyDodgeChance > 0) {
                     FontString = string(GrimyDodgeChance) $ "%";
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,28);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Normal);
@@ -236,7 +216,7 @@ simulated function Update()
 					GrimyTextDodge.SetText(FontString);
 					GrimyTextDodge.Show();
  
-                    FontString = "DODGE";
+                    FontString = "GRAZED";
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,19);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Header);
                     GrimyTextDodgeHeader.SetPosition(default.DODGE_OFFSET_X,default.DODGE_OFFSET_Y-22);
@@ -246,18 +226,15 @@ simulated function Update()
  
                 // Generate a display for Crit Damage
                 GrimyCritDmg = GetCritDamage(SelectedAbilityState, Target);
-                if ( default.SHOW_CRIT_DMG && GrimyCritDmg > 0 )
-                {
+                if (GetTH_SHOW_CRIT_DMG() && GrimyCritDmg > 0 ) {
                     FontString = "+" $ string(GrimyCritDmg);
                     FontString = class'UIUtilities_Text'.static.GetSizedText(FontString,28);
                     FontString = class'UIUtilities_Text'.static.GetColoredText(FontString,eUIState_Normal);
                     FontString = class'UIUtilities_Text'.static.AddFontInfo(FontString,false,true);
-                    if ( GrimyCritDmg > 9 ) //If the string is too long, shift it left by 15 pixels (~1 digit)
-                    {
+                    if (GrimyCritDmg > 9) { //If the string is too long, shift it left by 15 pixels (~1 digit)
                         GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X,default.CRIT_OFFSET_Y);
                     }
-                    else
-                    {
+                    else {
                         GrimyTextCrit.SetPosition(default.CRIT_OFFSET_X+15,default.CRIT_OFFSET_Y);
                     }
 					GrimyTextCrit.SetText(FontString);
@@ -277,9 +254,9 @@ simulated function Update()
                 GrimyMissWidth = default.BAR_WIDTH_MULT * ( 100 - HitChance);
                
                 // Generate the shot breakdown bar
-                if ( default.BAR_HEIGHT > 0 ) {
-                    if ( GrimyHitWidth > 0 ) {
-                        if ( default.AIM_LEFT_OF_CRIT ) {
+                if (default.BAR_HEIGHT > 0) {
+                    if (GrimyHitWidth > 0) {
+                        if (GetTH_AIM_LEFT_OF_CRIT()) {
                             GrimyBox1.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X,default.BAR_OFFSET_Y);
                         }
                         else {
@@ -289,8 +266,8 @@ simulated function Update()
 						GrimyBox1.Show();
                     }
  
-                    if ( GrimyCritWidth > 0 ) {
-                        if ( default.AIM_LEFT_OF_CRIT ) {
+                    if (GrimyCritWidth > 0) {
+                        if (GetTH_AIM_LEFT_OF_CRIT()) {
                             GrimyBox2.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth,default.BAR_OFFSET_Y);
                         }
                         else {
@@ -300,13 +277,13 @@ simulated function Update()
 						GrimyBox2.Show();
                     }
  
-                    if ( GrimyDodgeWidth > 0 ) {
+                    if (GrimyDodgeWidth > 0) {
                         GrimyBox3.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth,default.BAR_OFFSET_Y);
                         GrimyBox3.SetSize(GrimyDodgeWidth,default.BAR_HEIGHT);
                         GrimyBox3.Show();
                     }
  
-                    if ( GrimyMissWidth > 0 && GrimyMissWidth < 500 ) {
+                    if (GrimyMissWidth > 0 && GrimyMissWidth < 500) {
                         GrimyBox4.SetPosition(default.BAR_WIDTH_MULT * (-50) + default.BAR_OFFSET_X + GrimyHitWidth + GrimyCritWidth + GrimyDodgeWidth,default.BAR_OFFSET_Y);
                         GrimyBox4.SetSize(GrimyMissWidth,default.BAR_HEIGHT);
 						GrimyBox4.Show();
@@ -317,15 +294,13 @@ simulated function Update()
                 AS_SetCriticalChance(class'UIUtilities_Text'.static.GetColoredText(m_sCritChanceLabel, eUIState_Header), CritChance);
                 TacticalHUD.SetReticleAimPercentages(float(HitChance) / 100.0f, float(CritChance) / 100.0f);
             }
-            else
-            {
+            else {
                 AS_SetShotChance("", -1);
                 AS_SetCriticalChance("", -1);
                 TacticalHUD.SetReticleAimPercentages(-1, -1);
             }
         }
-        else
-        {
+        else {
             AS_SetShotChance("", -1);
             AS_SetCriticalChance("", -1);
         }
@@ -333,34 +308,27 @@ simulated function Update()
  
         //Show preview points, must be negative
         UnitFlag = XComPresentationLayer(Owner.Owner).m_kUnitFlagManager.GetFlagForObjectID(Target.ObjectID);
-        if( UnitFlag != none )
-        {
-            if ( default.PREVIEW_MINIMUM )
-            {
+        if(UnitFlag != none) {
+            if (GetTH_PREVIEW_MINIMUM()){
                 SetAbilityMinDamagePreview(UnitFlag, SelectedAbilityState, kTarget.PrimaryTarget);
             }
-            else
-            {
+            else {
                 XComPresentationLayer(Owner.Owner).m_kUnitFlagManager.SetAbilityDamagePreview(UnitFlag, SelectedAbilityState, kTarget.PrimaryTarget);
             }
         }
  
         //@TODO - jbouscher - ranges need to be implemented in a template friendly way.
         //Hide any current range meshes before we evaluate their visibility state
-        if (!ActionUnit.GetPawn().RangeIndicator.HiddenGame)
-        {
+        if (!ActionUnit.GetPawn().RangeIndicator.HiddenGame) {
             ActionUnit.RemoveRanges();
         }
     }
  
-    if (`REPLAY.bInTutorial)
-    {
-        if (SelectedAbilityTemplate != none && `TUTORIAL.IsNextAbility(SelectedAbilityTemplate.DataName) && `TUTORIAL.IsTarget(Target.ObjectID))
-        {
+    if (`REPLAY.bInTutorial) {
+        if (SelectedAbilityTemplate != none && `TUTORIAL.IsNextAbility(SelectedAbilityTemplate.DataName) && `TUTORIAL.IsTarget(Target.ObjectID)) {
             ShowShine();
         }
-        else
-        {
+        else {
             HideShine();
         }
     }
@@ -368,8 +336,7 @@ simulated function Update()
  
 // GRIMY - Added this function to calculate crit damage from a weapon.
 // It doesn't scan for abilities and ammo types though, those are unfortunately often stored in if conditions
-static function int GetCritDamage(XcomGameState_Ability AbilityState, StateObjectReference TargetRef)
-{
+static function int GetCritDamage(XcomGameState_Ability AbilityState, StateObjectReference TargetRef) {
 	local XComGameStateHistory History;
 	local XComGameState_Unit SourceUnit, TargetUnit;
 	local StateObjectReference EffectRef;
@@ -396,8 +363,7 @@ static function int GetCritDamage(XcomGameState_Ability AbilityState, StateObjec
 	ItemState = AbilityState.GetSourceWeapon();
 	ItemState.GetBaseWeaponDamageValue(ItemState, WeaponDamage);
 	CritDamage = WeaponDamage.Crit;
-	foreach SourceUnit.AffectedByEffects(EffectRef)
-	{
+	foreach SourceUnit.AffectedByEffects(EffectRef) {
 		EffectState = XComGameState_Effect(History.GetGameStateForObjectID(EffectRef.ObjectID));
 		EffectTemplate = EffectState.GetX2Effect();
 
@@ -408,16 +374,14 @@ static function int GetCritDamage(XcomGameState_Ability AbilityState, StateObjec
  
 // GRIMY - Added this to do a minimum damage preview.
 // Recreated the preview function in order to minimize # of files edited, and thus conflicts
-static function SetAbilityMinDamagePreview(UIUnitFlag kFlag, XComGameState_Ability AbilityState, StateObjectReference TargetObject)
-{
+static function SetAbilityMinDamagePreview(UIUnitFlag kFlag, XComGameState_Ability AbilityState, StateObjectReference TargetObject) {
     local XComGameState_Unit FlagUnit;
     local int shieldPoints, AllowedShield;
     local int possibleHPDamage, possibleShieldDamage;
     local WeaponDamageValue MinDamageValue;
     local WeaponDamageValue MaxDamageValue;
  
-    if(kFlag == none || AbilityState == none)
-    {
+    if(kFlag == none || AbilityState == none) {
         return;
     }
  
@@ -430,8 +394,7 @@ static function SetAbilityMinDamagePreview(UIUnitFlag kFlag, XComGameState_Abili
     possibleShieldDamage = 0;
  
     // MaxHP contains extra HP points given by shield
-    if(shieldPoints > 0 && AllowedShield > 0)
-    {
+    if(shieldPoints > 0 && AllowedShield > 0) {
         possibleShieldDamage = min(shieldPoints, MinDamageValue.Damage);
         possibleShieldDamage = min(possibleShieldDamage, AllowedShield);
         possibleHPDamage = MinDamageValue.Damage - possibleShieldDamage;
@@ -445,8 +408,7 @@ static function SetAbilityMinDamagePreview(UIUnitFlag kFlag, XComGameState_Abili
     kFlag.SetArmorPointsPreview(MinDamageValue.Shred, MinDamageValue.Pierce);
 }
  
-static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityTemplate, XComGameState_Ability SelectedAbilityState, AvailableTarget kTarget, string ShotDescription, StateObjectReference Shooter)
-{
+static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityTemplate, XComGameState_Ability SelectedAbilityState, AvailableTarget kTarget, string ShotDescription, StateObjectReference Shooter) {
     local string FontString;
     local XComGameState_InteractiveObject HackObject;
     local XComGameState_Unit HackUnit;
@@ -457,14 +419,11 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
     local X2HackRewardTemplate HackRewardInterator;
     local array<int> HackRollMods;
  
-    if ( default.PREVIEW_HACKING )
-    {
-        if ( SelectedAbilityTemplate.DataName == 'IntrusionProtocol' || SelectedAbilityTemplate.DataName == 'IntrusionProtocol_Chest' || SelectedAbilityTemplate.DataName == 'IntrusionProtocol_Workstation' || SelectedAbilityTemplate.DataName == 'IntrusionProtocol_ObjectiveChest' || SelectedAbilityTemplate.DataName == 'SKULLJACKAbility' || SelectedAbilityTemplate.DataName == 'SKULLMINEAbility' )
-        {
+    if (GetTH_PREVIEW_HACKING()) {
+        if (SelectedAbilityTemplate.DataName == 'IntrusionProtocol' || SelectedAbilityTemplate.DataName == 'IntrusionProtocol_Chest' || SelectedAbilityTemplate.DataName == 'IntrusionProtocol_Workstation' || SelectedAbilityTemplate.DataName == 'IntrusionProtocol_ObjectiveChest' || SelectedAbilityTemplate.DataName == 'SKULLJACKAbility' || SelectedAbilityTemplate.DataName == 'SKULLMINEAbility') {
             HackObject = XComGameState_InteractiveObject(`XCOMHISTORY.GetGameStateForObjectID(kTarget.PrimaryTarget.ObjectID));
             HackRewards = HackObject.GetHackRewards(SelectedAbilityTemplate.DataName);
-            if ( HackRewards.Length > 0 )
-            {
+            if (HackRewards.Length > 0) {
                 HackManager = class'X2HackRewardTemplateManager'.static.GetHackRewardTemplateManager();
                 HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[0]));
                 HackRewardTemplates.additem(HackManager.FindHackRewardTemplate(HackRewards[1]));
@@ -474,10 +433,8 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
                 HackDefense = class'X2AbilityToHitCalc_Hacking'.static.GetHackDefenseForTarget(HackObject);
                
                 HackRollMods = HackObject.GetHackRewardRollMods();
-                if ( HackRollMods.length == 0 )
-                {
-                    foreach HackRewardTemplates(HackRewardInterator)
-                    {
+                if (HackRollMods.length == 0) {
+                    foreach HackRewardTemplates(HackRewardInterator) {
                         HackRollMods.AddItem(`SYNC_RAND_STATIC(HackRewardInterator.HackSuccessVariance * 2) - HackRewardInterator.HackSuccessVariance);
                     }
                     HackObject.SetHackRewardRollMods(HackRollMods);
@@ -492,8 +449,7 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
                 return FontString;
             }
         }
-        else if ( SelectedAbilityTemplate.DataName == 'HaywireProtocol' )
-        {
+        else if (SelectedAbilityTemplate.DataName == 'HaywireProtocol') {
             HackUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(kTarget.PrimaryTarget.ObjectID));
                
             HackOffense = class'X2AbilityToHitCalc_Hacking'.static.GetHackAttackForUnit(XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(Shooter.ObjectID)), SelectedAbilityState);
@@ -501,15 +457,13 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
  
             HackManager = class'X2HackRewardTemplateManager'.static.GetHackRewardTemplateManager();
            
-            if ( HackUnit.GetMyTemplate().bIsTurret )
-            {
+            if ( HackUnit.GetMyTemplate().bIsTurret ) {
                 HackRewardTemplates.AddItem(HackManager.FindHackRewardTemplate('BuffEnemy'));
                 HackRewardTemplates.AddItem(HackManager.FindHackRewardTemplate('ShutdownTurret'));
                 HackRewardTemplates.AddItem(HackManager.FindHackRewardTemplate('ControlTurret'));
  
                 HackRollMods = HackObject.GetHackRewardRollMods();
-                if ( HackRollMods.length == 0 )
-                {
+                if (HackRollMods.length == 0) {
                     foreach HackRewardTemplates(HackRewardInterator)
                     {
                         HackRollMods.AddItem(`SYNC_RAND_STATIC(HackRewardInterator.HackSuccessVariance * 2) - HackRewardInterator.HackSuccessVariance);
@@ -525,17 +479,14 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
                 FontString = FontString $ ": " $ class'UIUtilities_Text'.static.GetColoredText( string(Clamp((100.0 - (HackRewardTemplates[2].MinHackSuccess + HackObject.HackRollMods[2])) * HackOffense / HackDefense, 0.0, 100.0)) $ "%", eUIState_Good);
                 return FontString;
             }
-            else
-            {
+            else {
                 HackRewardTemplates.AddItem(HackManager.FindHackRewardTemplate('BuffEnemy'));
                 HackRewardTemplates.AddItem(HackManager.FindHackRewardTemplate('ShutdownRobot'));
                 HackRewardTemplates.AddItem(HackManager.FindHackRewardTemplate('ControlRobot'));
  
                 HackRollMods = HackObject.GetHackRewardRollMods();
-                if ( HackRollMods.length == 0 )
-                {
-                    foreach HackRewardTemplates(HackRewardInterator)
-                    {
+                if (HackRollMods.length == 0) {
+                    foreach HackRewardTemplates(HackRewardInterator) {
                         HackRollMods.AddItem(`SYNC_RAND_STATIC(HackRewardInterator.HackSuccessVariance * 2) - HackRewardInterator.HackSuccessVariance);
                     }
                     HackObject.SetHackRewardRollMods(HackRollMods);
@@ -552,4 +503,32 @@ static function string UpdateHackDescription( X2AbilityTemplate SelectedAbilityT
         }
     }
     return ShotDescription;
+}
+
+static function bool GetTH_AIM_ASSIST() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_AIM_ASSIST;
+}
+
+static function bool GetTH_MISS_PERCENTAGE() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_MISS_PERCENTAGE;
+}
+
+static function bool GetTH_SHOW_GRAZED() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_SHOW_GRAZED;
+}
+
+static function bool GetTH_SHOW_CRIT_DMG() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_SHOW_CRIT_DMG;
+}
+
+static function bool GetTH_AIM_LEFT_OF_CRIT() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_AIM_LEFT_OF_CRIT;
+}
+
+static function bool GetTH_PREVIEW_MINIMUM() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_PREVIEW_MINIMUM;
+}
+
+static function bool GetTH_PREVIEW_HACKING() {
+	return class'XCom_Perfect_Information_MCMListener'.default.TH_PREVIEW_HACKING;
 }

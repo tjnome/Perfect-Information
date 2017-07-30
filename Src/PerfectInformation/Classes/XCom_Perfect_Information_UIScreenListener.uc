@@ -7,14 +7,14 @@
 class XCom_Perfect_Information_UIScreenListener extends UIScreenListener;
 
 // This event is triggered after a screen is initialized
-event OnInit(UIScreen Screen) 
-{
+event OnInit(UIScreen Screen) {
 	local UITacticalHUD MyScreen;
+
 	MyScreen = UITacticalHUD(Screen);
 
 	//Log uncessary after confirming values. Have them here as backup if needed.
-	//XComTacticalCheatManager(`XCOMGRI.GetALocalPlayerController().CheatManager).bCombatLog = true;
-	//XComTacticalCheatManager(`XCOMGRI.GetALocalPlayerController().CheatManager).bDebugBadAreaLog = true;
+	XComTacticalCheatManager(`XCOMGRI.GetALocalPlayerController().CheatManager).bCombatLog = true;
+	XComTacticalCheatManager(`XCOMGRI.GetALocalPlayerController().CheatManager).bDebugBadAreaLog = true;
 
 	MyScreen.m_kShotHUD.Remove();
 	MyScreen.m_kShotHUD = MyScreen.Spawn(class'XCom_Perfect_Information_UITacticalHUD_ShotHUD', MyScreen).InitShotHUD();
@@ -31,5 +31,6 @@ event OnInit(UIScreen Screen)
 
 defaultProperties
 {
-    ScreenClass=class'UITacticalHUD'
+    // Leaving this assigned to none will cause every screen to trigger its signals on this class
+	ScreenClass = UITacticalHUD;
 }

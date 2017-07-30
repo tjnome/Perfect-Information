@@ -19,8 +19,7 @@ simulated function UIEffectListItem InitEffectListItem(UIEffectList initList,
 
 	List = initList;
 
-	if( List == none )
-	{
+	if( List == none ) {
 		//`log("UIEffectListItem incoming 'List' is none.",,'uixcom');
 		return self;
 	}
@@ -49,14 +48,11 @@ simulated function UIEffectListItem InitEffectListItem(UIEffectList initList,
 	return self;
 }
 
-simulated function RefreshDisplay()
-{
-	if (Data.Icon == "")
-	{
+simulated function RefreshDisplay() {
+	if (Data.Icon == "") {
 		Icon.Hide();
 	}
-	else
-	{
+	else {
 		Icon.LoadIcon(Data.Icon);
 		Icon.Show();
 	}
@@ -66,8 +62,7 @@ simulated function RefreshDisplay()
 	EffectiNumTurns.SetText(GetNumTurnsString(Data.Cooldown));
 }
 
-simulated function string GetNumTurnsString(int NumTurns)
-{
+simulated function string GetNumTurnsString(int NumTurns) {
 	if(NumTurns > 0)
 		return string(NumTurns) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
 	else if (NumTurns == -1)
@@ -77,8 +72,7 @@ simulated function string GetNumTurnsString(int NumTurns)
 		//return Chr(8734) @ Class'UIUtilities_Text'.static.GetColoredText(TURNS_REMAINING, eUITextStyle_Tooltip_Title);
 }
 
-simulated function onTextSizeRealized()
-{
+simulated function onTextSizeRealized() {
 	local int iCalcNewHeight;
 
 	if (Data.Cooldown != 0)
@@ -87,8 +81,7 @@ simulated function onTextSizeRealized()
 		iCalcNewHeight = Desc.Y + Desc.height + BottomPadding;
 
 	//iCalcNewHeight = Desc.Y + Desc.height + EffectiNumTurns.Height;
-	if (iCalcNewHeight != Height )
-	{
+	if (iCalcNewHeight != Height ) {
 		Height = iCalcNewHeight;  
 		EffectiNumTurns.SetY(Desc.Y + Desc.height);
 		List.OnItemChanged(self);

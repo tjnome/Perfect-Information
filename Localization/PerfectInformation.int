@@ -1,40 +1,40 @@
 [XCom_Perfect_Information_MCMListener]
 MOD_NAME="Perfect Information"
-OPTIONS_HEADER="Options"
+OH_FS="Information flyover General Settings"
+OH_FD="Information flyover Display Settings"
+OH_FB="Information flyover Beta Settings"
+OH_ES="Enemy Tooltip Settings"
+OH_WI="Weapon Information Settings"
+OH_TH="Tactical HUD Settings"
 
-DURATION_TITLE_DAMAGE="Damage Flyover Duration"
-DURATION_DESCRIPTION_DAMAGE="Guaranteed Damage Flyover Duration"
+SF_ON_XCOM_SOLDIERS_TITLE="Enable/Disable flyovers (HIT/MISS, GRAZE, CRIT) on XCom soldiers"
+SF_ON_ENEMY_SOLDIERS_TITLE="Enable/Disable flyovers (HIT/MISS, GRAZE, CRIT) on Enemy soldiers"
+SF_ON_REACTION_SHOT_TITLE="Enable/Disable only flyovers on Reaction Shot"
 
-FLYOVER_TITLE_XCOM="Show Flyovers For XCom"
-FLYOVER_TITLE_ENEMY="Show Flyovers For Enemies"
+FD_HIT_TITLE="Enable/Disable Hit percentage on flyovers"
+FD_AIM_ASSIST_TITLE="Enable/Disable Aim Assist to hit perentage"
+FD_MISS_TITLE="Enable/Disable Miss percentage. Overwrites Hit percentage"
 
-REACTION_FLYOVERS_TITLE="Only Show Flyovers Reaction Shots"
-AIM_ASSIST_FLYOVER_TITLE="Show Aim Assist Flyovers"
+FD_CRIT_TITLE="Enable/Disable Crit percentage on flyovers"
+FD_GRAZED_TITLE="Enable/Disable Grazed percentage on flyovers"
 
-HIT_CHANCE_TITLE="Show Hit Chance"
-CRIT_CHANCE_TITLE="Show Crit Chance"
-DODGE_CHANCE_TITLE="Show Dodge Chance"
-MISS_CHANCE_TITLE="Show Miss Chance"
+FD_GUARANTEED_HIT_TITLE="Enable/Disable GUARANTEED Hit on flyovers"
+FD_GUARANTEED_MISS_TITLE="Enable/Disable GUARANTEED Miss on flyovers"
+FD_REPEATER_TITLE="Enable/Disable repeater percentage on instakill"
 
-SHORT_STRING_TITLE="Use Short Strings"
+FB_SHORT_TEXT_TITLE="Enable/Disable shorter version of flyovers"
 
-SHOW_GUARANTEED_HITS_TITLE="Show Guaranteed Hits"
-SHOW_GUARANTEED_MISS_TITLE="Show Guaranteed Misses"
+ES_TOOLTIP_TITLE="Enable/Disable Enemy stats tooltip"
+WI_WEAPONSTATS_TITLE="Enable/Disable Weaponstats"
 
-REPEATER_TITLE="Show Repeater Flyovers"
+TH_AIM_ASSIST_TITLE="Enable/Disable Aim Assist on TacticalHud"
+TH_MISS_PERCENTAGE_TITLE="Enable/Disable Miss percentage on TacticalHud. Overwrites hit pecentage"
+TH_SHOW_GRAZED_TITLE="Enable/Disable Grazed percentage on TacticalHud"
+TH_SHOW_CRIT_DMG_TITLE="Enable/Disable Crit damage on TacticalHud"
 
-SHOW_ENEMY_STATS_TITLE="Show Enemy Stats Tooltip"
-
-SHOW_EXTRA_WEAPONSTATS_TITLE="Show Weapon Extra Weapon Stats"
-
-SHOW_AIM_ASSIST_MAIN_HUD_TITLE="Show Aim Assist on Shot HUD"
-SHOW_MISS_CHANCE_MAIN_HUD_TITLE="Show Miss chance on Shot HUD"
-
-AIM_LEFT_OF_CRIT_TITLE="Show Aim Left of Crit on Shot Bar"
-PREVIEW_MINIMUM_TITLE="Damage Preview Shows Minimum"
-SHOW_DODGE_TITLE="Show Dodge on Shot HUD"
-SHOW_CRIT_DMG_TITLE="Show Crit Damage on Shot HUD"
-PREVIEW_HACKING_TITLE="Preview Hacking"
+TH_AIM_LEFT_OF_CRIT_TITLE="LEFT/RIGHT Show Aim to the left or right of crit?"
+TH_PREVIEW_MINIMUM_TITLE="Enable/Disable Minium damage on TacticalHud"
+TH_PREVIEW_HACKING_TITLE="Enable/Disable Hacking Percentage on TacticalHud"
 
 SHOW_AIM_ASSIST_OVER_ENEMY_ICON_TITLE="Show Aim Assists Over Enemy Icon"
 SHOW_MISS_CHANCE_OVER_ENEMY_ICON_TITLE="Show Miss Chance Over Enemy Icon"

@@ -10,8 +10,7 @@ var localized string KILLS_LABEL;
 var localized string ASSIST_LABEL;
 var localized string FLANKING_CRIT_LABEL;
 
-struct UnitStats_SoldierInfo
-{
+struct UnitStats_SoldierInfo {
 	var int CurrentHP, MaxHP;
 	var int BaseAim, CurrentAim;
 	var int BaseCrit, CurrentCrit;
@@ -36,12 +35,10 @@ struct UnitStats_SoldierInfo
 	}
 };
 
-simulated function UIPanel InitSoldierStats(optional name InitName, optional name InitLibID)
-{
+simulated function UIPanel InitSoldierStats(optional name InitName, optional name InitLibID) {
 	InitPanel(InitName, InitLibID);
 
-	if (`CHEATMGR != none && `CHEATMGR.bDebugXp)
-	{
+	if (`CHEATMGR != none && `CHEATMGR.bDebugXp) {
 		StatsHeight = default.StatsHeight + 100;
 		PADDING_BETWEEN_PANELS = default.PADDING_BETWEEN_PANELS + 100;
 	}
@@ -61,7 +58,6 @@ simulated function UIPanel InitSoldierStats(optional name InitName, optional nam
 
 	Spawn(class'UIPanel', BodyArea).InitPanel('BGBoxSimple', class'UIUtilities_Controls'.const.MC_X2BackgroundSimple).SetSize(StatsWidth, StatsHeight);
 	
-	
 	StatList = Spawn(class'UIStatList', BodyArea);
 	StatList.InitStatList('StatList',, PADDING_LEFT, PADDING_TOP, StatsWidth-PADDING_RIGHT, BodyArea.height-PADDING_BOTTOM, class'UIStatList'.default.PADDING_LEFT, class'UIStatList'.default.PADDING_RIGHT/2);
 
@@ -70,12 +66,11 @@ simulated function UIPanel InitSoldierStats(optional name InitName, optional nam
 	return self; 
 }
 
-simulated function ShowTooltip()
-{
+simulated function ShowTooltip() {
 	local int ScrollHeight;
 
 	//Trigger only on the correct hover item 
-	if( class'XCom_Perfect_Information_UITacticalHUD_BuffsTooltip'.static.IsPathBonusOrPenaltyMC(currentPath) ) return;
+	if (class'XCom_Perfect_Information_UITacticalHUD_BuffsTooltip'.static.IsPathBonusOrPenaltyMC(currentPath)) return;
 
 	RefreshData();
 	
@@ -86,35 +81,30 @@ simulated function ShowTooltip()
 }
 
 
-simulated function HideTooltip( optional bool bAnimateIfPossible = false )
-{
+simulated function HideTooltip(optional bool bAnimateIfPossible = false) {
 	super.HideTooltip(bAnimateIfPossible);
 	BodyArea.ClearScroll();
 }
 
-simulated function RefreshData()
-{
+simulated function RefreshData() {
 	local XGUnit				kActiveUnit;
 	local XComGameState_Unit	kGameStateUnit;
 	
 	// Only update if new unit
 	kActiveUnit = XComTacticalController(PC).GetActiveUnit();
 
-	if( kActiveUnit == none )
-	{
+	if (kActiveUnit == none) {
 		HideTooltip();
 		return; 
 	} 
-	else if( kActiveUnit != none )
-	{
+	else if (kActiveUnit != none) {
 		kGameStateUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(kActiveUnit.ObjectID));
 	}
 	
 	StatList.RefreshData( GetSoldierStats(kGameStateUnit) );
 }
 
-simulated function array<UISummary_ItemStat> GetSoldierStats(XComGameState_Unit kGameStateUnit)
-{
+simulated function array<UISummary_ItemStat> GetSoldierStats(XComGameState_Unit kGameStateUnit) {
 	local array<UISummary_ItemStat> Stats; 
 	local UISummary_ItemStat Item; 
 	local UnitStats_SoldierInfo Summary;
@@ -202,8 +192,7 @@ simulated function array<UISummary_ItemStat> GetSoldierStats(XComGameState_Unit 
 	return Stats;
 }
 
-simulated function UnitStats_SoldierInfo GetUnitStats(XComGameState_Unit kGameStateUnit)
-{
+simulated function UnitStats_SoldierInfo GetUnitStats(XComGameState_Unit kGameStateUnit) {
 	//local XComGameState_XpManager XpMan;
 	local UnitStats_SoldierInfo Summary; 
 	local XComGameStateHistory History;
@@ -249,11 +238,9 @@ simulated function UnitStats_SoldierInfo GetUnitStats(XComGameState_Unit kGameSt
 	Summary.CurrentPsiOffense = kGameStateUnit.GetCurrentStat(eStat_PsiOffense);
 
 	History = `XCOMHISTORY;
-	foreach kGameStateUnit.AffectedByEffects(EffectRef)
-	{
+	foreach kGameStateUnit.AffectedByEffects(EffectRef) {
 		EffectState = XComGameState_Effect(History.GetGameStateForObjectID(EffectRef.ObjectID));
-		if (EffectState != none)
-		{
+		if (EffectState != none) {
 			EffectTemplate = EffectState.GetX2Effect();
 			EffectTemplate.ModifyUISummaryUnitStats(EffectState, kGameStateUnit, eStat_Offense, Summary.CurrentAim);
 			EffectTemplate.ModifyUISummaryUnitStats(EffectState, kGameStateUnit, eStat_Hacking, Summary.CurrentHacking);
@@ -267,14 +254,12 @@ simulated function UnitStats_SoldierInfo GetUnitStats(XComGameState_Unit kGameSt
 }
 
 
-function string ColorForSingelPositiveStat(string text)
-{
+function string ColorForSingelPositiveStat(string text) {
 	
 	return (class'UIUtilities_Colors'.static.ColorString(text, MakeColor(83,180,94,0)));
 }
 
-function string ColorAndStringForStats(int statbase, int statcurrent) 
-{
+function string ColorAndStringForStats(int statbase, int statcurrent) {
 	local Color Tcolor;
 	local string CText;
 
@@ -288,36 +273,27 @@ function string ColorAndStringForStats(int statbase, int statcurrent)
 	return (statbase $ " " $ class'UIUtilities_Colors'.static.ColorString(CText, Tcolor));
 } 
 
-function string StatChange(int statbase, int statcurrent)  
-{
+function string StatChange(int statbase, int statcurrent) {
 	if (statbase > statcurrent) 
 		return "-" $ (statbase - statcurrent);
-
 	else
 		return "+" $ (statcurrent - statbase);
 }
 
-function Color ColorHP(float CurrentHP, float MaxHP) 
-{
-
+function Color ColorHP(float CurrentHP, float MaxHP) {
 	if (CurrentHP/MaxHP > 0.66) 
 		return MakeColor(83,180,94,0);
-
 	else if (CurrentHP/MaxHP < 0.33) 
 		return MakeColor(191,30,46,0);
-
 	else 
 		return MakeColor(200,100,0,0);
 }
 
-function Color StatChangeColor(Float BaseStat, Float CurrentStat)
-{
+function Color StatChangeColor(Float BaseStat, Float CurrentStat) {
 	if (BaseStat > CurrentStat) 
 		return MakeColor(191,30,46,0);
-
 	else 
 		return MakeColor(83,180,94,0);
-
 }
 
 //Defaults: ------------------------------------------------------------------------------

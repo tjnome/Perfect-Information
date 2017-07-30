@@ -4,18 +4,32 @@
 //	
 //-----------------------------------------------------------
 
-class XCom_Perfect_Information_UITacticalHUD_EnemyTooltip extends UITacticalHUD_EnemyTooltip config(PerfectInformation);
+class XCom_Perfect_Information_UITacticalHUD_EnemyTooltip extends UITooltip config(PerfectInformation);
 
 var int StatsWidth;
+var int PADDING_LEFT;
+var int PADDING_RIGHT;
+var int PADDING_TOP;
+var int PADDING_BOTTOM;
+var int PaddingBetweenBoxes; 
+var int PaddingForAbilityList;
 
-//var private UIAbilityList AbilityList;
-var public UIMask BodyMask;
+var int StatsHeight;
+var int AbilitiesHeight; 
+
+var UIStatList	StatList; 
+var UIPanel		BodyArea;
+
+//Disabling the enemy ability list, per gameplay, 1/23/2015 - bsteiner 
+//var private UIAbilityList	AbilityList; 
+var UIPanel		AbilityArea;
+var UIText		Title; 
+var UIPanel		Line; 
+var UIMask		BodyMask;
 
 var localized string PrimaryBase, PrimarySpread, PrimaryPlusOne;
 
-
-simulated function UIPanel InitEnemyStats(optional name InitName, optional name InitLibID)
-{
+simulated function UIPanel InitEnemyStats(optional name InitName, optional name InitLibID) {
 	InitPanel(InitName, InitLibID);
 
 	height = StatsHeight + PaddingBetweenBoxes;
@@ -47,38 +61,35 @@ simulated function UIPanel InitEnemyStats(optional name InitName, optional name 
 	return self; 
 }
 
-simulated function ShowTooltip()
-{
+simulated function ShowTooltip() {
 	local int ScrollHeight;
 
-	if (RefreshData())
-	{
+	if (RefreshData()) {
 		ScrollHeight = (StatList.height > StatList.height ) ? StatList.height : StatList.height; 
 		BodyArea.AnimateScroll( ScrollHeight, BodyMask.height);
+		if (TooltipGroup != none && !bIsVisible) {
+			//Notify the tooltip group if this panel is becoming visible.
+			TooltipGroup.SignalNotify();
+		}
 
-		//AbilityList.Show(); 
 		super.ShowTooltip();
 	}
 }
 
-
-simulated function HideTooltip( optional bool bAnimateIfPossible = false )
-{
+simulated function HideTooltip(optional bool bAnimateIfPossible = false) {
 	super.HideTooltip(bAnimateIfPossible);
 	BodyArea.ClearScroll();
 }
 
-simulated function bool RefreshData()
-{
+simulated function bool RefreshData() {
 	local XGUnit				ActiveUnit;
 	local XComGameState_Unit	GameStateUnit;
 	local int					iTargetIndex;
 	local array<string>			Path;
 
-	if( XComTacticalController(PC) == None )
-	{
-		//StatList.RefreshData( DEBUG_GetStats() );
-		//AbilityList.RefreshData( DEBUG_GetUISummary_Abilities() );
+	if (XComTacticalController(PC) == None) {
+		//StatList.RefreshData(DEBUG_GetStats());
+		//AbilityList.RefreshData(DEBUG_GetUISummary_Abilities());
 		return true;
 	}
 	
@@ -86,24 +97,21 @@ simulated function bool RefreshData()
 	iTargetIndex = int(Split(Path[5], "icon", true));
 	ActiveUnit = XGUnit(XComPresentationLayer(Movie.Pres).GetTacticalHUD().m_kEnemyTargets.GetEnemyAtIcon(iTargetIndex));
 
-	if( ActiveUnit == none )
-	{
+	if (ActiveUnit == none) {
 		HideTooltip();
 		return false; 
 	} 
-	else if( ActiveUnit != none )
-	{
+	else if (ActiveUnit != none) {
 		GameStateUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ActiveUnit.ObjectID));
 	}
-	
-	StatList.RefreshData( GetEnemyStats(GameStateUnit) );
+
+	StatList.RefreshData(GetEnemyStats(GameStateUnit));
 	//AbilityList.RefreshData( GameStateUnit.GetUISummary_Abilities() );
 
 	return true;
 }
 
-simulated function array<UISummary_ItemStat> GetEnemyStats( XComGameState_Unit kGameStateUnit )
-{
+simulated function array<UISummary_ItemStat> GetEnemyStats(XComGameState_Unit kGameStateUnit) {
 	local array<UISummary_ItemStat> Stats; 
 	local UISummary_ItemStat Item; 
 	local EUISummary_UnitStats Summary;
@@ -177,8 +185,7 @@ simulated function array<UISummary_ItemStat> GetEnemyStats( XComGameState_Unit k
 	return Stats;
 }
 
-function string ColorAndStringForStats(int statbase, int statcurrent) 
-{
+function string ColorAndStringForStats(int statbase, int statcurrent) {
 	local Color Tcolor;
 	local string CText;
 
@@ -192,42 +199,31 @@ function string ColorAndStringForStats(int statbase, int statcurrent)
 	return (statbase $ " " $ class'UIUtilities_Colors'.static.ColorString(CText, Tcolor));
 } 
 
-function string StatChange(int statbase, int statcurrent)  
-{
+function string StatChange(int statbase, int statcurrent) {
 	if (statbase > statcurrent) 
 		return "-" $ (statbase - statcurrent);
-
 	else
 		return "+" $ (statcurrent - statbase);
 }
 
-function Color ColorHP(float CurrentHP, float MaxHP) 
-{
-
+function Color ColorHP(float CurrentHP, float MaxHP) {
 	if (CurrentHP/MaxHP > 0.66) 
 		return MakeColor(83,180,94,0);
-
 	else if (CurrentHP/MaxHP < 0.33) 
 		return MakeColor(191,30,46,0);
-
 	else 
 		return MakeColor(200,100,0,0);
 }
 
-function Color StatChangeColor(Float BaseStat, Float CurrentStat)
-{
+function Color StatChangeColor(Float BaseStat, Float CurrentStat) {
 	if (BaseStat > CurrentStat) 
 		return MakeColor(191,30,46,0);
-
 	else 
 		return MakeColor(83,180,94,0);
-
 }
 
-
-
 //Defaults: ------------------------------------------------------------------------------
-defaultproperties
+defaultproperties 
 {
 	StatsWidth = 255;
 	width = 350;

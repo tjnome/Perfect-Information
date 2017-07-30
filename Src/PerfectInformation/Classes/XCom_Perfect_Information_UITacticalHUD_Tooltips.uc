@@ -8,8 +8,7 @@ class XCom_Perfect_Information_UITacticalHUD_Tooltips extends UITacticalHUD_Tool
 
 var config bool SHOW_ENEMY_STATS_TOOLTIP;
 
-simulated function InitializeTooltipData()
-{
+simulated function InitializeTooltipData() {
 	local UITacticalHUD_WeaponTooltip WeaponTooltip;
 	//local UITacticalHUD_BackPackTooltip BackpackTooltip;
 	local XCom_Perfect_Information_UITacticalHUD_SoldierInfoTooltip SoldierInfoTooltip;
@@ -79,8 +78,7 @@ simulated function InitializeTooltipData()
 
 	// Enemy Stats tooltip ------------------------------------------------------------------
 	// dburchanowski - Oct 16, 2015: Disabling, but leaving here in case Jake wants it back before we ship
-	If (SHOW_ENEMY_STATS_TOOLTIP)
-	{
+	If (GetES_TOOLTIP()) {
 		EnemyTooltip = Spawn(class'XCom_Perfect_Information_UITacticalHUD_EnemyTooltip', Movie.Pres.m_kTooltipMgr); 
 		EnemyTooltip.InitEnemyStats('TooltipEnemyStats');
 
@@ -162,4 +160,8 @@ simulated function InitializeTooltipData()
 	if (EnemyTooltip != none)
 		EnemyStats.AddWithRestingYPosition(EnemyTooltip, EnemyTooltip.Y);
 
+}
+
+static function bool GetES_TOOLTIP() {
+	return class'XCom_Perfect_Information_MCMListener'.default.ES_TOOLTIP;
 }

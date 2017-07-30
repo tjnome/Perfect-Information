@@ -4,10 +4,33 @@
 //	
 //-----------------------------------------------------------
 
-class XCom_Perfect_Information_UITacticalHUD_BuffsTooltip extends UITacticalHUD_BuffsTooltip;
+class XCom_Perfect_Information_UITacticalHUD_BuffsTooltip extends UITooltip;
 
-simulated function UIPanel InitBonusesAndPenalties(optional name InitName, optional name InitLibID, optional bool bIsBonusPanel, optional bool bIsSoldier, optional float InitX = 0, optional float InitY = 0, optional bool bShowOnRight)
-{
+var int PADDING_LEFT;
+var int PADDING_RIGHT;
+var int PADDING_TOP;
+var int PADDING_BOTTOM;
+
+var int headerHeight; 
+var int MaxHeight; 
+var float AnchorX; 
+var float AnchorY; 
+
+var UIEffectList ItemList; 
+var UIMask ItemListMask; 
+var UIPanel Header; 
+var UIText Title; 
+var UIPanel	HeaderIcon; 
+var UIPanel	BGBox;
+
+var bool ShowBonusHeader; 
+var bool IsSoldierVersion;
+var bool ShowOnRightSide;
+
+var string m_strBonusMC;
+var string m_strPenaltyMC; 
+
+simulated function UIPanel InitBonusesAndPenalties(optional name InitName, optional name InitLibID, optional bool bIsBonusPanel, optional bool bIsSoldier, optional float InitX = 0, optional float InitY = 0, optional bool bShowOnRight) {
 	InitPanel(InitName, InitLibID);
 
 	Hide();
@@ -27,7 +50,7 @@ simulated function UIPanel InitBonusesAndPenalties(optional name InitName, optio
 	Header = Spawn(class'UIPanel', self).InitPanel('HeaderArea').SetPosition(PADDING_LEFT,0);
 	Header.SetHeight(headerHeight);
 
-	if( bIsBonusPanel )
+	if (bIsBonusPanel)
 		HeaderIcon = Spawn(class'UIPanel', Header).InitPanel('BonusIcon', class'UIUtilities_Controls'.const.MC_BonusIcon).SetSize(20,20);
 	else
 		HeaderIcon = Spawn(class'UIPanel', Header).InitPanel('PenaltyIcon', class'UIUtilities_Controls'.const.MC_PenaltyIcon).SetSize(20,20);
@@ -59,8 +82,12 @@ simulated function UIPanel InitBonusesAndPenalties(optional name InitName, optio
 	return self; 
 }
 
-simulated function RefreshData()
-{
+simulated function ShowTooltip() {
+	super.ShowTooltip();
+	RefreshData();	
+}
+
+simulated function RefreshData() {
 	local XGUnit						kActiveUnit;
 	local XComGameState_Unit			kGameStateUnit;
 	local int							iTargetIndex; 
@@ -68,51 +95,42 @@ simulated function RefreshData()
 	local array<UISummary_UnitEffect>	Effects;
 
 	//Trigger on the correct hover item 
-	if( XComTacticalController(PC) != None )
-	{	
-		if(IsSoldierVersion)
-		{
+	if (XComTacticalController(PC) != None) {	
+		if (IsSoldierVersion) {
 			kActiveUnit = XComTacticalController(PC).GetActiveUnit();
 		}
-		else
-		{
-			Path = SplitString( currentPath, "." );	
-			iTargetIndex = int(Split( Path[5], "icon", true));
+		else {
+			Path = SplitString(currentPath, "." );	
+			iTargetIndex = int(Split(Path[5], "icon", true));
 			kActiveUnit = XGUnit(XComPresentationLayer(Movie.Pres).GetTacticalHUD().m_kEnemyTargets.GetEnemyAtIcon(iTargetIndex));
 		}
 	}
 
 	// Only update if new unit
-	if( kActiveUnit == none )
-	{
-		if( XComTacticalController(PC) != None )
-		{
+	if (kActiveUnit == none) {
+		if(XComTacticalController(PC) != None) {
 			HideTooltip();
 			return;
 		}
 	} 
-	else if( kActiveUnit != none )
-	{
+	else if (kActiveUnit != none) {
 		kGameStateUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(kActiveUnit.ObjectID));
 	}
 
-	if(ShowBonusHeader)
-	{
+	if (ShowBonusHeader) {
 		Effects = GetUnitEffectsByCategory(kGameStateUnit, ePerkBuff_Bonus);
 		Title.SetHTMLText(class'UIUtilities_Text'.static.StyleText( class'XLocalizedData'.default.BonusesHeader, eUITextStyle_Tooltip_StatLabel) );
 	}
-	else
-	{
+	else {
 		Effects = GetUnitEffectsByCategory(kGameStateUnit, ePerkBuff_Penalty);
 		Title.SetHTMLText(class'UIUtilities_Text'.static.StyleText( class'XLocalizedData'.default.PenaltiesHeader, eUITextStyle_Tooltip_StatLabel) );
 	}
 
-	if( Effects.length == 0 )
-	{
-		if( XComTacticalController(PC) != None )
+	if (Effects.length == 0) {
+		if (XComTacticalController(PC) != None)
 			HideTooltip();
 		else
-			ItemList.RefreshData( DEBUG_GetData() );
+			ItemList.RefreshData(GetData());
 		return; 
 	}
 
@@ -120,9 +138,31 @@ simulated function RefreshData()
 	OnEffectListSizeRealized();
 }
 
+simulated function array<UISummary_UnitEffect>GetData() {
+	local array<UISummary_UnitEffect> Items; 
+	local UISummary_UnitEffect Item; 
+	local int i, iSize;
 
-simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGameState_Unit kGameStateUnit, EPerkBuffCategory Category)
-{
+	if (ShowBonusHeader)
+		iSize = 10;
+	else 
+		iSize = 3; 
+
+	for (i = 0; i < iSize; i++) {
+		if (ShowBonusHeader)
+			Item.Name = "Bonus" @ string(i);
+		else
+			Item.Name = "Penalty" @ string(i);
+
+		Item.Description = "Sample "$string(i) $" description! This is where the description for the perk would go.";
+		Item.Icon = "img:///UILibrary_PerkIcons.UIPerk_gremlincommand";
+		Items.AddItem(Item);
+	}
+
+	return Items;
+}
+
+simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGameState_Unit kGameStateUnit, EPerkBuffCategory Category) {
 	local UISummary_UnitEffect Item, EmptyItem;  
 	local array<UISummary_UnitEffect> List; 
 	local XComGameState_Effect EffectState;
@@ -132,38 +172,30 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 
 	History = `XCOMHISTORY;
 
-	foreach kGameStateUnit.AffectedByEffects(EffectRef)
-	{
+	foreach kGameStateUnit.AffectedByEffects(EffectRef) {
 		EffectState = XComGameState_Effect(History.GetGameStateForObjectID(EffectRef.ObjectID));
-		if (EffectState != none)
-		{
+		if (EffectState != none) {
 			Persist = EffectState.GetX2Effect();
-			if (Persist != none && Persist.bDisplayInUI && Persist.BuffCategory == Category && Persist.IsEffectCurrentlyRelevant(EffectState, kGameStateUnit))
-			{
+			if (Persist != none && Persist.bDisplayInUI && Persist.BuffCategory == Category && Persist.IsEffectCurrentlyRelevant(EffectState, kGameStateUnit)) {
 				Item = EmptyItem;
 				FillUnitEffect(kGameStateUnit, EffectState, Persist, false, Item);
 				List.AddItem(Item);
 			}
 		}
 	}
-	foreach kGameStateUnit.AppliedEffects(EffectRef)
-	{
+	foreach kGameStateUnit.AppliedEffects(EffectRef) {
 		EffectState = XComGameState_Effect(History.GetGameStateForObjectID(EffectRef.ObjectID));
-		if (EffectState != none)
-		{
+		if (EffectState != none) {
 			Persist = EffectState.GetX2Effect();
-			if (Persist != none && Persist.bSourceDisplayInUI && Persist.SourceBuffCategory == Category && Persist.IsEffectCurrentlyRelevant(EffectState, kGameStateUnit))
-			{
+			if (Persist != none && Persist.bSourceDisplayInUI && Persist.SourceBuffCategory == Category && Persist.IsEffectCurrentlyRelevant(EffectState, kGameStateUnit)) {
 				Item = EmptyItem;
 				FillUnitEffect(kGameStateUnit, EffectState, Persist, true, Item);
 				List.AddItem(Item);
 			}
 		}
 	}
-	if (Category == ePerkBuff_Penalty)
-	{
-		if (kGameStateUnit.GetRupturedValue() > 0)
-		{
+	if (Category == ePerkBuff_Penalty) {
+		if (kGameStateUnit.GetRupturedValue() > 0) {
 			Item = EmptyItem;
 			Item.AbilitySourceName = 'eAbilitySource_Standard';
 			Item.Icon = class 'X2StatusEffects'.default.RuptureIcon;
@@ -175,15 +207,49 @@ simulated function array<UISummary_UnitEffect> GetUnitEffectsByCategory(XComGame
 
 	return List; 
 }
-simulated function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary)
-{
+
+static function bool IsPathBonusOrPenaltyMC( string tPath ) {
+	local array<string>	Path; 
+	local string		MCLabel; 
+
+	//Trigger only on the correct hover item 
+	Path = SplitString( tPath, "." );	
+	MCLabel = Path[Path.length-1]; 
+
+	return ( MCLabel == default.m_strBonusMC 
+		 ||  MCLabel == default.m_strPenaltyMC );
+}
+
+simulated function OnEffectListSizeRealized() {
+	local Vector2D BottomAnchor;
+
+	Height = PADDING_TOP + PADDING_BOTTOM + headerHeight + ItemList.MaskHeight;
+	BGBox.SetHeight( Height );
+	ItemListMask.SetHeight(ItemList.MaskHeight);
+
+	if (ShowOnRightSide) {
+		BottomAnchor = Movie.ConvertNormalizedScreenCoordsToUICoords(1, 1); //Bottom Right
+		SetPosition(BottomAnchor.X - Width - 20, BottomAnchor.Y - 180 - Height);
+	}
+	else {
+		BottomAnchor = Movie.ConvertNormalizedScreenCoordsToUICoords(0, 1); //Bottom Left
+		SetPosition(BottomAnchor.X + 20, BottomAnchor.Y - 180 - Height);
+	}
+
+	if (TooltipGroup != none) {
+		if (UITooltipGroup_Stacking(TooltipGroup) != none)
+			UITooltipGroup_Stacking(TooltipGroup).UpdateRestingYPosition(self, Y);
+		TooltipGroup.SignalNotify();
+	}
+}
+
+simulated function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const XComGameState_Effect EffectState, const X2Effect_Persistent Persist, const bool bSource, out UISummary_UnitEffect Summary) {
 	local X2AbilityTag AbilityTag;
 
 	AbilityTag = X2AbilityTag(`XEXPANDCONTEXT.FindTag("Ability"));
 	AbilityTag.ParseObj = EffectState;
 
-	if (bSource)
-	{
+	if (bSource) {
 		Summary.Name = Persist.SourceFriendlyName;
 		Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription $ "\n" $ CooldownDescription(EffectState, Persist));
 		//Summary.Description = `XEXPAND.ExpandString(Persist.SourceFriendlyDescription);
@@ -197,15 +263,13 @@ simulated function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const
 		Summary.Charges = 0; //TODO @jbouscher @bsteiner
 		Summary.AbilitySourceName = Persist.AbilitySourceName;
 	}
-	else
-	{
+	else {
 		Summary.Name = Persist.FriendlyName;
 		Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription $ "\n" $ CooldownDescription(EffectState, Persist));
 		//Summary.Description = `XEXPAND.ExpandString(Persist.FriendlyDescription);
 		Summary.Icon = Persist.IconImage;
 
-		if (Persist.bInfiniteDuration) 
-		{
+		if (Persist.bInfiniteDuration) {
 			if (kGameStateUnit.StunnedActionPoints > 0)
 				Summary.Cooldown = (class'X2CharacterTemplateManager'.default.StandardActionsPerTurn / kGameStateUnit.StunnedActionPoints);
 			else if(kGameStateUnit.StunnedThisTurn > 0 && kGameStateUnit.StunnedActionPoints == 0)
@@ -221,8 +285,7 @@ simulated function FillUnitEffect(const XComGameState_Unit kGameStateUnit, const
 	AbilityTag.ParseObj = None;
 }
 
-simulated function string CooldownDescription (const XComGameState_Effect EffectState, const X2Effect_Persistent Persist) 
-{
+simulated function string CooldownDescription (const XComGameState_Effect EffectState, const X2Effect_Persistent Persist) {
 	local XComGameState_Player PlayerState;
 
 	// Adds information if the effect is Persistent of not
@@ -243,10 +306,8 @@ simulated function string CooldownDescription (const XComGameState_Effect Effect
 }
 
 // Get information if it ends on aliens or players turn.
-static final function string GetTeam(const XComGameState_Player PlayerState)
-{
-	switch (PlayerState.GetTeam())
-	{
+static final function string GetTeam(const XComGameState_Player PlayerState) {
+	switch (PlayerState.GetTeam()) {
 		case eTeam_XCom:
 			return "Player's";
 			break;
@@ -263,10 +324,8 @@ static final function string GetTeam(const XComGameState_Player PlayerState)
 }
 
 // Get information from WatchRule if the effects on on start/after action/after turn ended.
-static final function string WatchRule(const X2Effect_Persistent Persist)
-{
-	switch (Persist.WatchRule)
-	{
+static final function string WatchRule(const X2Effect_Persistent Persist) {
+	switch (Persist.WatchRule) {
 		case eGameRule_PlayerTurnBegin:
 			return "Ends on the start of";
 			break;
@@ -277,4 +336,26 @@ static final function string WatchRule(const X2Effect_Persistent Persist)
 			return "Ends on the start of";
 			break;
 	}
+}
+
+//Defaults: ------------------------------------------------------------------------------
+defaultproperties
+{
+	width = 450;
+	Height = 220;
+	MaxHeight = 700;
+
+	headerHeight = 30; 
+
+	PADDING_LEFT	= 10;
+	PADDING_RIGHT	= 10;
+	PADDING_TOP		= 10;
+	PADDING_BOTTOM	= 10;
+
+	bUsePartialPath = true; 
+	bFollowMouse = false;
+	Anchor = 0;
+
+	m_strBonusMC = "bonusMC"
+	m_strPenaltyMC = "penaltyMC";
 }

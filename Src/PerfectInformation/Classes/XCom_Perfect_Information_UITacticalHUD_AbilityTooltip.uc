@@ -74,16 +74,14 @@ simulated function UIPanel InitAbility(optional name InitName,
 	return self; 
 }
 
-simulated function RefreshData()
-{
+simulated function RefreshData() {
 	local XGUnit				kActiveUnit;
 	local XComGameState_Ability	kGameStateAbility;
 	local XComGameState_Unit	kGameStateUnit;
 	local int					iTargetIndex; 
 	local array<string>			Path; 
 
-	if( XComTacticalController(PC) == None )
-	{	
+	if( XComTacticalController(PC) == None ) {	
 		Data = DEBUG_GetUISummary_Ability();
 		RefreshDisplay();	
 		return; 
@@ -92,13 +90,11 @@ simulated function RefreshData()
 	// Only update if new unit
 	kActiveUnit = XComTacticalController(PC).GetActiveUnit();
 
-	if( kActiveUnit == none )
-	{
+	if( kActiveUnit == none ) {
 		HideTooltip();
 		return; 
 	} 
-	else if( kActiveUnit != none )
-	{
+	else if( kActiveUnit != none ) {
 		kGameStateUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(kActiveUnit.ObjectID));
 	}
 
@@ -106,8 +102,7 @@ simulated function RefreshData()
 	iTargetIndex = int(GetRightMost(Path[5]));
 	kGameStateAbility = UITacticalHUD(Movie.Stack.GetScreen(class'UITacticalHUD')).m_kAbilityHUD.GetAbilityAtIndex(iTargetIndex);
 	
-	if( kGameStateAbility == none )
-	{
+	if( kGameStateAbility == none ) {
 		HideTooltip();
 		return; 
 	}
@@ -116,8 +111,7 @@ simulated function RefreshData()
 	RefreshDisplay();	
 }
 
-simulated function RefreshSizeAndScroll()
-{
+simulated function RefreshSizeAndScroll() {
 	local int iCalcNewHeight;
 	local int MaxAbilityHeight;
 	
@@ -136,8 +130,7 @@ simulated function RefreshSizeAndScroll()
 	iCalcNewHeight = AbilityArea.Y + AbilityArea.height; 
 	MaxAbilityHeight = MAX_HEIGHT - AbilityArea.Y;
 
-	if(iCalcNewHeight != height)
-	{
+	if(iCalcNewHeight != height) {
 		height = iCalcNewHeight;  
 		if( height > MAX_HEIGHT )
 			height = MAX_HEIGHT; 
@@ -157,15 +150,13 @@ simulated function RefreshSizeAndScroll()
 	SetY( InitAnchorY - height );
 }
 
-simulated function UISummary_Ability GetSummaryAbility(XComGameState_Ability kGameStateAbility, XComGameState_Unit kGameStateUnit)
-{
+simulated function UISummary_Ability GetSummaryAbility(XComGameState_Ability kGameStateAbility, XComGameState_Unit kGameStateUnit) {
 	local UISummary_Ability AbilityData;
 	local X2AbilityTemplate Template;
 
 	// First, get all of the template-relevant data in here. 
 	Template = kGameStateAbility.GetMyTemplate();
-	if (Template != None)
-	{
+	if (Template != None) {
 		AbilityData = Template.GetUISummary_Ability(); 		
 	}
 

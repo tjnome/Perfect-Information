@@ -14,15 +14,13 @@ var localized string LOWER_DIFFICULTY_MSG;
 var localized string MISS_STREAK_MSG;
 var localized string SOLDIER_LOST_BONUS;
 
-simulated function UITacticalHUD_ShotWings InitShotWings(optional name InitName, optional name InitLibID)
-{
+simulated function UITacticalHUD_ShotWings InitShotWings(optional name InitName, optional name InitLibID) {
 	bLeftWingOpen = !SHOW_ALWAYS_SHOT_BREAKDOWN_HUD;
 	bRightWingOpen = !SHOW_ALWAYS_SHOT_BREAKDOWN_HUD;
 	return super.InitShotWings(InitName, InitLibID);
 }
 
-simulated function RefreshData()
-{
+simulated function RefreshData() {
 	local StateObjectReference	kEnemyRef;
 	local StateObjectReference	Shooter, Target; 
 	local AvailableAction       kAction;
@@ -42,16 +40,14 @@ simulated function RefreshData()
 	AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(kAction.AbilityObjectRef.ObjectID));
 
 	// Bail if we have  nothing to show -------------------------------------
-	if( AbilityState == none )
-	{
+	if (AbilityState == none) {
 		Hide();
 		return; 
 	}
 
 	//Don't show this normal shot breakdown for the hacking action ------------
 	AbilityState.GetUISummary_HackingBreakdown( kHackingBreakdown, kEnemyRef.ObjectID );
-	if( kHackingBreakdown.bShow ) 
-	{
+	if (kHackingBreakdown.bShow) {
 		Hide();
 		return; 
 	}
@@ -63,8 +59,7 @@ simulated function RefreshData()
 	TargetingMethod = UITacticalHUD(screen).GetTargetingMethod();
 	if (TargetingMethod != none)
 		TargetIndex = TargetingMethod.GetTargetIndex();
-	if( kAction.AvailableTargets.Length > 0 && TargetIndex < kAction.AvailableTargets.Length )
-	{
+	if (kAction.AvailableTargets.Length > 0 && TargetIndex < kAction.AvailableTargets.Length) {
 		kTarget = kAction.AvailableTargets[TargetIndex];
 	}
 
@@ -74,18 +69,15 @@ simulated function RefreshData()
 	iShotBreakdown = AbilityState.LookupShotBreakdown(Shooter, Target, AbilityState.GetReference(), Breakdown);
 
 	// Hide if requested -------------------------------------------------------
-	if (Breakdown.HideShotBreakdown)
-	{
+	if (Breakdown.HideShotBreakdown) {
 		Hide();
 
-		if(bLeftWingOpen)
-		{
+		if (bLeftWingOpen) {
 			bLeftWingWasOpen = true;
 			OnWingButtonClicked(LeftWingButton);
 		}
 
-		if(bRightWingOpen)
-		{
+		if (bRightWingOpen) {
 			bRightWingWasOpen = true;
 			OnWingButtonClicked(RightWingButton);
 		}
@@ -94,8 +86,7 @@ simulated function RefreshData()
 		RightWingButton.Hide();
 		return; 
 	}
-	else
-	{
+	else {
 		UITacticalHUD(screen).m_kShotHUD.MC.FunctionVoid( "ShowHit" );
 		UITacticalHUD(screen).m_kShotHUD.MC.FunctionVoid( "ShowCrit" );
 
@@ -105,40 +96,35 @@ simulated function RefreshData()
 
 		// This should fix the issue. Since it now change the values around again.
 		if (SHOW_ALWAYS_SHOT_BREAKDOWN_HUD) {
-			if(!bLeftWingOpen)
+			if (!bLeftWingOpen)
 				OnWingButtonClicked(LeftWingButton);
 
-			if(!bRightWingOpen)
+			if (!bRightWingOpen)
 				OnWingButtonClicked(RightWingButton);
 
 			bLeftWingWasOpen = false;
 			bRightWingWasOpen = false;
 		}
-		else
-		{
-			if(bLeftWingWasOpen && !bLeftWingOpen) 
-			{
+		else {
+			if (bLeftWingWasOpen && !bLeftWingOpen) {
 				OnWingButtonClicked(LeftWingButton);
 				bLeftWingWasOpen = false;
 			}
 
-			if(bRightWingWasOpen && !bRightWingOpen) 
-			{
+			if(bRightWingWasOpen && !bRightWingOpen) {
 				OnWingButtonClicked(RightWingButton);
 				bRightWingWasOpen = false;
 			}
 		}
 	}
 
-	if (Target.ObjectID == 0)
-	{
+	if (Target.ObjectID == 0) {
 		Hide();
 		return; 
 	}
 
 	// Gameplay special hackery for multi-shot display. -----------------------
-	if(iShotBreakdown != Breakdown.FinalHitChance)
-	{
+	if (iShotBreakdown != Breakdown.FinalHitChance) {
 		bMultiShots = true;
 		ShotInfo.ModType = eHit_Success;
 		ShotInfo.Value = iShotBreakdown - Breakdown.FinalHitChance;
@@ -164,8 +150,7 @@ simulated function RefreshData()
 	HitChance = Clamp(((Breakdown.bIsMultishot) ? Breakdown.MultiShotHitChance : Breakdown.FinalHitChance), 0, 100);
 
 	//Check for standarshot
-	if (X2AbilityToHitCalc_StandardAim(AbilityState.GetMyTemplate().AbilityToHitCalc) != None && SHOW_AIM_ASSIST_BREAKDOWN_HUD)
-	{	
+	if (X2AbilityToHitCalc_StandardAim(AbilityState.GetMyTemplate().AbilityToHitCalc) != None && SHOW_AIM_ASSIST_BREAKDOWN_HUD) {	
 		AimBonus = GetModifiedHitChance(AbilityState, HitChance, Stats);
 	}
 
@@ -179,8 +164,7 @@ simulated function RefreshData()
 	HitPercent.SetHtmlText(class'UIUtilities_Text'.static.StyleText(TmpStr, eUITextStyle_Tooltip_StatValue));
 	HitStatList.RefreshData(Stats);
 
-	if(Breakdown.ResultTable[eHit_Crit] >= 0)
-	{
+	if(Breakdown.ResultTable[eHit_Crit] >= 0) {
 		CritLabel.SetHtmlText(class'UIUtilities_Text'.static.StyleText(class'XLocalizedData'.default.CritLabel, eUITextStyle_Tooltip_StatLabel));
 		TmpStr = string(Breakdown.ResultTable[eHit_Crit]) $ "%";
 		CritPercent.SetHtmlText(class'UIUtilities_Text'.static.StyleText(TmpStr, eUITextStyle_Tooltip_StatValue));
@@ -192,14 +176,12 @@ simulated function RefreshData()
 }
 
 // Custom sort
-function int SortAfterValue(UISummary_ItemStat A, UISummary_ItemStat B)
-{
+function int SortAfterValue(UISummary_ItemStat A, UISummary_ItemStat B) {
     return (GetNumber(B.Value) > GetNumber(A.Value)) ? -1 : 0;
 }
 
 // This should give me only numbers.
-static final function int GetNumber(string s)
-{
+static final function int GetNumber(string s) {
 	local string result;
 	local int i, c;
 
@@ -213,8 +195,7 @@ static final function int GetNumber(string s)
 }
 
 // Basicly same function as ModifiedHitChance from X2AbilityToHitCalc_StandardAim
-function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHitChance, optional out array<UISummary_ItemStat> Stats)
-{
+function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHitChance, optional out array<UISummary_ItemStat> Stats) {
 	local int CurrentLivingSoldiers, SoldiersLost, ModifiedHitChance, CurrentDifficulty, SingleModifiedHitChance;
 	local UISummary_ItemStat Item;
 
@@ -238,13 +219,10 @@ function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHi
 	}
 
 	// XCom gets 20% bonus to hit for each consecutive miss made already this turn
-	if(ShooterPlayer.TeamFlag == eTeam_XCom && !(`XENGINE.IsMultiplayerGame()))
-	{
+	if(ShooterPlayer.TeamFlag == eTeam_XCom && !(`XENGINE.IsMultiplayerGame())) {
 
-		foreach History.IterateByClassType(class'XComGameState_Unit', Unit)
-		{
-			if( Unit.GetTeam() == eTeam_XCom && !Unit.bRemovedFromPlay && Unit.IsAlive() && !Unit.GetMyTemplate().bIsCosmetic )
-			{
+		foreach History.IterateByClassType(class'XComGameState_Unit', Unit) {
+			if( Unit.GetTeam() == eTeam_XCom && !Unit.bRemovedFromPlay && Unit.IsAlive() && !Unit.GetMyTemplate().bIsCosmetic ) {
 				++CurrentLivingSoldiers;
 			}
 		}
@@ -258,11 +236,9 @@ function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHi
 
 		// DifficultyBonus
 		// Fixing name issue later with localization
-		if (SingleModifiedHitChance > 0)
-		{
+		if (SingleModifiedHitChance > 0) {
 			// Add to Stats (ProcessBreakDown)
-			if (SHOW_AIM_ASSIST_BREAKDOWN_HUD)
-			{
+			if (SHOW_AIM_ASSIST_BREAKDOWN_HUD) {
 				Item.Label = class'UIUtilities_Text'.static.GetColoredText(LOWER_DIFFICULTY_MSG, eUIState_Good );
 				Item.Value = class'UIUtilities_Text'.static.GetColoredText("+" $ SingleModifiedHitChance $ "%", eUIState_Good );
 				Stats.AddItem(Item);
@@ -270,20 +246,17 @@ function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHi
 		}
 
 
-		if(BaseHitChance >= StandardAim.ReasonableShotMinimumToEnableAimAssist) // 50
-		{
+		if(BaseHitChance >= StandardAim.ReasonableShotMinimumToEnableAimAssist) { // 50
 			SingleModifiedHitChance = ShooterPlayer.MissStreak * StandardAim.AimAssistDifficulties[CurrentDifficulty].MissStreakChanceAdjustment; // 20
 			//Miss Bonus!
 			// Fixing name issue later with localization
 			SingleModifiedHitChance = Clamp(SingleModifiedHitChance, 0, StandardAim.MaxAimAssistScore - ModifiedHitChance);
-			if (SingleModifiedHitChance > 0 && ModifiedHitChance <= StandardAim.MaxAimAssistScore)
-			{
+			if (SingleModifiedHitChance > 0 && ModifiedHitChance <= StandardAim.MaxAimAssistScore) {
 				// add the chance to total!
 				ModifiedHitChance += SingleModifiedHitChance;
 				
 				// Add to Stats (ProcessBreakDown)
-				if (SHOW_AIM_ASSIST_BREAKDOWN_HUD)
-				{
+				if (SHOW_AIM_ASSIST_BREAKDOWN_HUD) {
 					Item.Label = class'UIUtilities_Text'.static.GetColoredText(MISS_STREAK_MSG, eUIState_Good );
 					Item.Value = class'UIUtilities_Text'.static.GetColoredText("+" $ SingleModifiedHitChance $ "%", eUIState_Good );
 					Stats.AddItem(Item);
@@ -295,20 +268,17 @@ function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHi
 			// Squady lost bonus
 			// Fixing name issue later with localization
 			SingleModifiedHitChance = Clamp(SingleModifiedHitChance, 0, StandardAim.MaxAimAssistScore - ModifiedHitChance);
-			if (SingleModifiedHitChance > 0 && ModifiedHitChance <= StandardAim.MaxAimAssistScore)
-			{
+			if (SingleModifiedHitChance > 0 && ModifiedHitChance <= StandardAim.MaxAimAssistScore) {
 				
 				// add the chance to total!
 				ModifiedHitChance += SingleModifiedHitChance;
 				// Add to Stats (ProcessBreakDown)
-				if (SHOW_AIM_ASSIST_BREAKDOWN_HUD)
-				{
+				if (SHOW_AIM_ASSIST_BREAKDOWN_HUD) {
 					Item.Label = class'UIUtilities_Text'.static.GetColoredText(SOLDIER_LOST_BONUS, eUIState_Good );
 					Item.Value = class'UIUtilities_Text'.static.GetColoredText("+" $ SingleModifiedHitChance $ "%", eUIState_Good );
 					Stats.AddItem(Item);
 				}
 			}
-
 		}
 	}
 
@@ -318,28 +288,24 @@ function int GetModifiedHitChance(XComGameState_Ability AbilityState, int BaseHi
 	return ModifiedHitChance - BaseHitChance;;
 }
 
-simulated function array<UISummary_ItemStat> ProcessBreakdown(ShotBreakdown Breakdown, int eHitType)
-{
+simulated function array<UISummary_ItemStat> ProcessBreakdown(ShotBreakdown Breakdown, int eHitType) {
 	local array<UISummary_ItemStat> Stats; 
 	local UISummary_ItemStat Item; 
 	local int i, Value; 
 	local string strLabel, strValue, strPrefix; 
 	local EUIState eState;
 
-	for( i=0; i < Breakdown.Modifiers.Length; i++)
-	{	
+	for( i=0; i < Breakdown.Modifiers.Length; i++) {	
 		if (SHOW_MISS_CHANCE_BREAKDOWN_HUD)
 			Value = (100 - Breakdown.Modifiers[i].Value);
 		else
 			Value = (Breakdown.Modifiers[i].Value);
 		
-		if( Value < 0 )
-		{
+		if (Value < 0) {
 			eState = eUIState_Bad;
 			strPrefix = "";
 		}
-		else
-		{
+		else {
 			eState = eUIState_Good; 
 			strPrefix = "+";
 		}
@@ -347,15 +313,14 @@ simulated function array<UISummary_ItemStat> ProcessBreakdown(ShotBreakdown Brea
 		strLabel = class'UIUtilities_Text'.static.GetColoredText( Breakdown.Modifiers[i].Reason, eState );
 		strValue = class'UIUtilities_Text'.static.GetColoredText( strPrefix $ string(Value) $ "%", eState );
 
-		if (Breakdown.Modifiers[i].ModType == eHitType)
-		{
+		if (Breakdown.Modifiers[i].ModType == eHitType) {
 			Item.Label = strLabel; 
 			Item.Value = strValue;
 			Stats.AddItem(Item);
 		}
 	}
 
-	if( eHitType == eHit_Crit && Stats.length == 1 && Breakdown.ResultTable[eHit_Crit] == 0 )
+	if (eHitType == eHit_Crit && Stats.length == 1 && Breakdown.ResultTable[eHit_Crit] == 0)
 		Stats.length = 0; 
 
 	return Stats; 
